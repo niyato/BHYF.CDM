@@ -1,0 +1,146 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/lhgcalendar.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcore.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcalendar.min.js")"></script>
+
+<script type="text/javascript">
+    J(function () {
+        J('#inp11').calendar({ maxDate: '#inp12' });
+        J('#inp12').calendar({ minDate: '#inp11' });
+    });
+
+    function opcal() {
+        J.calendar.Show();
+    }
+</script>
+
+<div class="rightContent">
+    <div class="rightContentBox">
+        <div class="subnav"><a href="">首页</a> > 产品申请</div>
+        <!--搜索-->
+        <div class="searchbox">
+            <div class="mR25">
+                <label class="fl mR15" style="margin-top:5px">状态</label>
+                @Html.DropDownList("deliverystatuslist", null, "请选择", new { @id = "selstatus", @class = "dropdown" })
+            </div>
+            <div class="mR25">
+                <label class="fl mR15" style="margin-top:5px">申请人</label>
+                <input class="runcode searchInput" />
+            </div>
+            <div class="mR15">
+                <label class="mR10">申请日期</label>
+                <input type="text" class="runcode searchInput" readonly id="inp11" />至<input class="runcode searchInput" readonly id="inp12" type="text" />
+            </div>
+            <div><button type="button" id="btnSearch" class="searchBtn">搜索</button></div>
+
+
+        </div>
+        <!--搜索 end-->
+
+        <div class="clear"></div>
+        <!--申请列表-->
+        <div class="applicationbox">
+            <table width="100%" border="0" cellspacing="0" id="tblist">
+                <tr>
+                    <th scope="col">申请单号</th>
+                    <th scope="col">办事处/代理商</th>
+                    <th scope="col">出处</th>
+                    <th scope="col">申请人</th>
+                    <th scope="col">申请日期</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </table>
+
+        </div>
+        <div id="divpage" class="flickr" style="text-align: left"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+
+    $(function () {
+        initData(0);
+    });
+
+    $("#btnSearch").click(function () {
+        var selstatus = $("#selstatus").val();
+        var date1 = $("#inp11").val();
+        var date2 = $("#inp12").val();
+        initData(0, selstatus, date1, date2);
+    })
+
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0) {
+            var selstatus = $("#selstatus").val();
+            var date1 = $("#inp11").val();
+            var date2 = $("#inp12").val();
+            initData(page_id, selstatus, date1, date2);
+        }
+    }
+
+    function initData(pageindx, status, date1, date2) {
+        var tbody = "";
+        var pageCount = "";
+        var strdata = "page=" + (pageindx + 1) + "&limit=" + pageSize + "&orderBy=createtime&ascending=" + false;
+        if (status)
+            strdata += "&status=" + status;
+
+        if (date1 && date2)
+            strdata += "&date1=" + date1 + "&date2=" + date2;
+
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery',//目标地址
+            async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+            data: strdata,
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                pageCount = json.total;
+                
+
+                var powerstr = '@ViewBag.powerstr';
+                var searchurl = '@Url.Action("ApplyDetail")';
+                if (powerstr.indexOf("deliveryapplydetail") >= 0) {
+                    searchurl = '@Url.Action("Pending")';
+                }
+                $("#tblist tr").eq(0).nextAll().remove();
+                $.each(resultData, function (i, obj) {
+                    $("#tblist").append("<tr>" +
+                        "<td>" + obj.num + "</td>" +
+                        "<td>" + (obj.applySource == "agancy" ? obj.source : obj.agentSource) + "</td>" +
+                        "<td>" + (obj.applySource == "agancy" ? "办事处" : "代理商") + "</td>" +
+                        "<td>" + (obj.relation ? obj.relation : '') + "</td>" +
+                       "<td>" + moment(obj.createTime).format('YYYY-MM-DD') + "</td>" +
+                        "<td>" + GetStatusStr(obj.status) + "</td>" +
+                        "<td><a href='" + searchurl + "?id=" + obj.id + "'>查看</a>" +
+                        "</tr>");
+                });
+            }
+        });
+
+        // if (pageCount != 0) {
+        $("#divpage").pagination(pageCount, {
+            callback: pageselectCallback,
+            prev_text: '<< 上一页',
+            next_text: '下一页 >>',
+            items_per_page: 10,
+            num_display_entries: 6,
+            current_page: pageindx,
+            num_edge_entries: 2
+        });
+        // }
+    }
+</script>

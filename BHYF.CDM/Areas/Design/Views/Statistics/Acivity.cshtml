@@ -1,0 +1,66 @@
+﻿
+@{
+    Layout = "~/Areas/Design/Views/Shared/_LayoutStatistics.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        $("table tbody").empty();
+        $.getJSON("/SignUp/GetAllActivity", function (json) {
+            var str = "<tr>"
+                + "<td>" + json.Event.id + "</td>"
+                + "<td>" + json.Event.eventName + "</td>"
+                + "<td>" + (json.Event.startTime ? moment(json.Event.startTime).format('YYYY-MM-DD HH:mm:ss') : '/') + "</td>"
+                + "<td>" + (json.Event.stopTime ? moment(json.Event.stopTime).format('YYYY-MM-DD HH:mm:ss') : '/') + "</td>"
+                + "<td>" + json.Event.pvCount + "</td>"
+                + "<td>" + json.Event.uvCount + "</td>"
+                + "<td>" + json.ShareCount + "</td>"
+                + "<td>" + json.SignUpCount + "</td>"
+                + "<td>" + json.TotalVoteCount + "</td></tr>";
+            $("table tbody").append(str);
+        });
+    });
+</script>
+<style>
+    table{border:1px solid #ccc;border-collapse:collapse;width:100%}
+    table th,table td{height:67px;border:1px solid #ccc;text-align:center}
+    table th{background-color:#f2f2f2}
+    .headbox{margin-bottom:20px;}
+    label{margin-right:20px;margin-left:20px;font-weight:normal}
+    .headbox input{margin-top:12px;}
+    select{height:30px;width:150px;}
+    .headbox img{margin-left:200px;cursor:pointer;}
+</style>
+<div class="headbox">
+    <label>活动名称</label><input type="text" id="txtAci"/>
+    <label>套餐名称</label><input type="text" id="txttao"/>
+    <label class="bool">是否允许续订</label>
+    <select>
+        <option>全部</option>
+        <option>允许续订</option>
+        <option>不允许续订</option>
+    </select>
+    <img src="@Url.Content("~/Content/images/btn_search.png")" id="btn" />
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>活动ID</th>
+            <th>活动名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>PV统计</th>
+            <th>UV统计</th>
+            <th>被分享数</th>
+            <th>报名人数</th>
+            <th>总投票数</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="display:none">
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+

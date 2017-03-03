@@ -1,0 +1,303 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/lhgcalendar.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcore.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcalendar.min.js")"></script>
+
+<script type="text/javascript">
+    J(function () {
+        J('#DeliveryDate').calendar();
+    });
+
+    function opcal() {
+        J.calendar.Show();
+    }
+</script>
+
+<div id="activity_pane">
+    <div class="rightContent">
+        <div class="rightContentBox">
+            <div class="subnav"><a href="">首页</a> > 产品申请 > 发货单</div>
+            <!--申请详情-->
+            <div class="bigTit mT20 mB10"><h3>发货单</h3></div>
+            <div class="mT20 mB10 Copybox">
+                <span class="fl">
+                    <label class="mR10">发货日期</label>
+                    <input class="searchInput" type="text" id="DeliveryDate" />
+                </span>
+                <span class="fr">
+                    <label class="mR10">发货单号</label>
+                    <input class="searchInput" type="text" id="DeliveryNumber" readonly />
+                </span>
+            </div>
+            <div class="detailEditBox fl">
+
+                <div class="invoiceInfoBox">
+                    <div class="mR15 fl">
+                        <label class="mR10">分公司办事处名称</label>
+                        <input class="searchInput" type="text" id="AgencyName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">代理商名称</label>
+                        <input class="searchInput" type="text" id="AgentName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">客户名称</label>
+                        <input class="searchInput" type="text" id="ClientName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font color="red">*</font>联系方式</label>
+                        <input class="searchInput" type="text" id="PhoneNumber" />
+                    </div>          
+                    <div class="mR15 fl">
+                        <label class="mR10"><font color="red">*</font>收货人名称</label>
+                        <input class="searchInput" type="text" id="ReceiveName" />
+                    </div>
+                </div>
+
+                <div class="invoiceInfoBox">
+                    <div class="mR15 fl">
+                        <label class="mR10"><font color="red">*</font>物流公司</label>
+                        <input class="searchInput" type="text" id="SendCompany" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font color="red">*</font>物流单号</label>
+                        <input class="searchInput" type="text" id="SendNumber" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font color="red">*</font>收货地址</label>
+                        <input class="searchInput" type="text" style="width:420px" id="ReceiveAddress" />
+                    </div>
+                </div>
+
+                <table style="width:100%" border="0" cellspacing="0" id="tlist" class="accTabbox">
+                    <tr>
+                        <th scope="col">序号</th>
+                        <th scope="col">产品名称</th>
+                        <th scope="col">数量</th>
+                        <th scope="col">备注</th>
+                    </tr>
+                </table>
+
+                <div class="recipientInfoBox">
+                    <div class="mR15 fl">
+                        <label class="mR10">质检</label>
+                        <input class="searchInput" type="text" id="MassCheck" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">件数</label>
+                        <input class="searchInput" type="text" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">包装</label>
+                        <input class="searchInput" type="text" id="Packing" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">保管员</label>
+                        <input class="searchInput" type="text" id="KeepName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10">制表</label>
+                        <input class="searchInput" type="text" id="TabName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10" style="vertical-align: top">备注</label>
+                        <textarea class="form-control input-sm duiqi" id="Description"></textarea> 
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="mB10">上传发货单凭证：</h3>
+                    <div class="default">
+                        <div id="localImag">
+                            <img id="preview" src="@Url.Content("/Content/delivery/images/add.png")" width="100" style="display: block; width: 100px; height:100px;" class="w60">
+                            <input type="file" id="inputimg" style="width:100px;height:100px; opacity:0; position:absolute; bottom:0; ">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tC mT20 mB20">
+                    <input type="button" value="保存" id="preserveBtn" class="preserveBtn" style="display:none;">
+                    <input type="button" value="取消" id="btnCancel" class="preserveBtn">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        var id = '@ViewBag.Id';
+        BindData(id);
+    })
+
+    //上传图片
+    $("#inputimg").change(function (data) {
+        var formData = new FormData();
+        formData.append('file', $('#inputimg')[0].files[0]);
+        var id = '@ViewBag.Id';
+        $.ajax({
+            url: '/v1/file/UploadDeliveryImg?id=' + id,
+            type: 'POST',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            $("#preview").attr("src", "/upload/delivery/" + id + "/" + res.data);
+        }).fail(function (res) { });
+    })
+
+    function BindData(id) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/' + id,//目标地址
+            beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                BindProduct(resultData.deliveryApplyProducts);
+                //生成单号
+                var num = '@ViewBag.InvoiceNumber';
+                $("#DeliveryNumber").val(num);
+
+
+                var powerstr = '@ViewBag.powerstr'; 
+                if (powerstr.indexOf("factorydelivery") >= 0 && resultData.status == "WaitSend") {
+                    $("#preserveBtn").show();
+                }
+                
+            }
+        });
+    }
+
+    //绑定发货信息
+    
+
+    //绑定发货商品信息
+    function BindProduct(json) {
+        $.each(json, function (i, obj) {
+            $("#tlist").append("<tr>"
+                    + "<td>" + obj.id + "</td>"
+                    + "<td>" + obj.productName + "</td>"
+                    + "<td>" + obj.number + "</td>"
+                    + "<td>" + obj.saleType + "</td>"
+                    + "</tr>");
+        })
+    }
+
+    $("#btnCancel").click(function () {
+        history.go(-1);
+    })
+
+    //提交发货申请单
+    $("#preserveBtn").click(function (e) {
+        e.preventDefault();
+
+        if ($("#ReceiveName").val().trim().length == 0)
+        {
+            easyDialog.open({
+                container: {
+                    content: '请输入收货人名称！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#ReceiveAddress").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '请输入收货地址！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#PhoneNumber").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '请输入联系方式！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#SendCompany").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '请输入物流公司！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#SendNumber").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '请输入物流单号！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+        
+        if ($("#inputimg").val() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请选择图片！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        var data = {
+            "ApplyId": '@ViewBag.Id',
+            "DeliveryDate": $("#DeliveryDate").val(),
+            "DeliveryNumber": $("#DeliveryNumber").val(),
+            "AgencyName": $("#AgencyName").val(),
+            "AgentName": $("#AgentName").val(),
+            "ClientName": $("#ClientName").val(),
+            "PhoneNumber": $("#PhoneNumber").val(),
+            "ReceiveName": $("#ReceiveName").val(),
+            "ReceiveAddress": $("#ReceiveAddress").val(),
+            "SendCompany": $("#SendCompany").val(),
+            "SendNumber": $("#SendNumber").val(),
+            "MassCheck": $("#MassCheck").val(),
+            "Packing": $("#Packing").val(),
+            "Img": $("#preview").attr("src"),
+            "KeepName": $("#KeepName").val(),
+            "TabName": $("#TabName").val(),
+            "Description": $("#Description").val()
+        };
+        PostForm(data);
+    })
+
+    function PostForm(data) {
+        //提交审批
+        $.ajax({
+            url: '/v1/delivery/PostDeliveryInvoice',
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+        }).done(function (res) {
+            window.location.href = '@Url.Action("ApplyListManage")';
+            return false;
+        }).fail(function (res) {
+            alert("操作失败" + res);
+        });
+    }
+
+
+
+</script>

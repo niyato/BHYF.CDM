@@ -1,0 +1,65 @@
+﻿@inherits System.Web.Mvc.WebViewPage
+
+@{
+    Layout = "~/Areas/design/Views/Shared/_LayoutStatistics.cshtml";
+}
+
+<script type="text/javascript">
+        $().ready(function () {
+            var $table = $("#tblist");
+            $.getJSON("/v1/design/getapplyevent", function (msg) {
+                var json = msg.data;
+                $.each(json, function () {
+                    $table.append("<tr><td>" + this["event_id"] + "</td><td>"
+                    + this["event_name"] + "</td><td>" +
+                    (this["event_startTime"] ? moment(this["event_startTime"]).format('YYYY-MM-DD HH:mm') : '')
+                    + "</td><td>" + (this["event_stopTime"] ? moment(this["event_stopTime"]).format('YYYY-MM-DD HH:mm') : '')
+                    + "</td><td>" + this["event_pvCount"] + "</td><td>" + this["event_uvCount"]
+                    + "</td><td>" + this["event_share"] + "</td></tr>");
+                });
+            });
+        });
+</script>
+<style>
+    /* 表格样式 */
+    #tblist {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+    }
+
+        #tblist th, td {
+            width: 134px;
+            height: 68px;
+            border: 1px solid #ccc;
+        }
+
+        #tblist th {
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #ddd;
+        }
+
+        #tblist td {
+            font-size: 12px;
+            text-align: center;
+        }
+</style>
+
+<center>
+    <h3>活动热度统计</h3>
+    <table id="tblist">
+        <tr>
+            <th>活动ID</th>
+            <th>活动名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>PV统计</th>
+            <th>UV统计</th>
+            <th>被分享数</th>
+        </tr>
+        <tr style="display:none">
+            <td></td>
+        </tr>
+    </table>
+</center>
+

@@ -1,0 +1,306 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+<div id="activity_pane">
+    <div class="col-sm-12">
+        <form class="form-horizontal well">
+            <div class="form-group">
+                <label class="col-sm-1 control-label">园名称</label>
+                <div class="col-sm-4">
+                    <input id="gname" class="ember-view ember-text-field form-control" placeholder="模糊匹配" type="text">
+                </div>
+                <label class="col-sm-1 control-label">状态</label>
+                <div class="col-sm-2">
+                    @Html.DropDownList("applyenumlist", null, "请选择", new { @id = "selstatus", @class = "ember-view ember-select form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">申请来源</label>
+                <div class="col-sm-4">
+                    @Html.DropDownList("applysource", null, "请选择", new { @id = "selsource", @class = "ember-view ember-select form-control" })
+                </div>
+                <div class="col-sm-2">
+                    <input type="button" id="btnsearch" class="btn-default" value="查询" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>园所名称</th>
+                <th>申请人</th>
+                <th>跟踪人</th>
+                <th>联系方式</th>
+                <th>原始出处</th>
+                <th>申请时间</th>
+                <th>状态</th>
+                <th>提交方案</th>
+                <th>操作</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="divpage" class="flickr" style="text-align: left"></div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">需求信息</h3>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#home" data-toggle="tab">科创申请</a></li>
+                <li><a href="#profect" data-toggle="tab">需求方案</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active in" id="home">
+                    <form id="formfade" class="form-horizontal">
+                        <div class="modal-body">
+                            <fieldset>
+                                <legend>基础信息</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">幼儿园地址:</label><span id="address" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">幼儿园名称:</label><span id="gname" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">负责老师姓名</label><span id="tname" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">负责老师电话</label><span id="tmobile" class="label label-info"></span>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend>更多完善资料</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">园所性质</label><span id="nature" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">预算金额</label><span id="budget" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">环创区域</label><span id="area" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">主题风格</label><span id="style" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">预计安装时间</label><span id="time" class="label label-info"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 text-right">需求描述</label><span id="apply_content" class="label label-info"></span>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend>图片信息</legend>
+                                <div id="divimgs"></div>
+                            </fieldset>
+
+                        </div>
+                    </form>
+                </div>
+                <div id="profect" class="tab-pane fade">
+                    <form id="formfade" class="form-horizontal">
+                        <div id="divplan" class="modal-body">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="selectapplyid" />
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    <button class="btn btn-danger" id="btnPost">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+
+    $(function () {
+        initData(0);
+
+        $(".jq_link").click(function () {
+            var id = $(this).attr('rel');
+            $("#myModal").modal();
+            $("#selectapplyid").val(id);
+            BindDatas(id);
+            BindPlans(id);
+        })
+    });
+
+    $("#btnsearch").click(function () {
+        var gname = $("#gname").val();
+        var status = $("#selstatus").val();
+        var source = $("#selsource").val();
+        initData(0, gname, status, source)
+    })
+
+    $("#btnPost").click(function () {
+        var data = {
+            "apply_id": $("#selectapplyid").val()
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/v1/design/PostDesignPlanReview',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                alert('提交成功');
+                parent.window.location.href = '@Url.Action("DesignReview")';
+                $("#myModal").modal('hide');
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    })
+
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0) {
+            var gname = $("#gname").val();
+            var status = $("#selstatus").val();
+            var source = $("#selsource").val();
+            initData(page_id, gname, status, source);
+        }
+    }
+
+    function initData(pageindx, gname, status, source) {
+        var tbody = "";
+        var pageCount = "";
+        var applystatus = '@ViewBag.ApplyStatus';
+        if (status)
+            applystatus = status;
+
+        var strdata = "status=" + applystatus + "&page=" + (pageindx + 1) + "&limit=" + pageSize + "&orderBy=createtime&ascending=" + false;
+        if (gname)
+            strdata += "&gname=" + gname;
+        if (source)
+            strdata += "&source=" + source;
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: '/v1/design',//目标地址
+            async: false,
+            data: strdata,
+            beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                pageCount = json.total;
+
+                $(".table tbody").empty();
+                if (resultData == "") {
+                    $("#divload").hide();
+                }
+                $.each(resultData, function (i, obj) {
+                    $(".table tbody").append("<tr>" +
+                        "<td>" + obj.apply_gardenName + "</td>" +
+                        "<td>" + obj.apply_name + "</td>" +
+                        "<td>" + (obj.rname ? obj.rname : "") + "</td>" +
+                        "<td>" + (obj.apply_phone ? obj.apply_phone : '') + "</td>" +
+                        "<td>" + (obj.apply_source ? obj.apply_source : "") + "</td>" +
+                        "<td>" + (obj.apply_createTime ? moment(obj.apply_createTime).format('YYYY-MM-DD') : '') + "</td>" +
+                        "<td>" + GetStatusStr(obj.apply_status) + "</td>" +
+                        GettdByItem(obj.plan_status) +
+                        "<td><a rel=" + obj.apply_id + " href='javascript:void(0)' class='jq_link' role='button' data-toggle='modal'>方案</a>" +
+                        "</td></tr>");
+                });
+            }
+        });
+
+        $("#divpage").pagination(pageCount, {
+            callback: pageselectCallback,
+            prev_text: '<< 上一页',
+            next_text: '下一页 >>',
+            items_per_page: 10,
+            num_display_entries: 6,
+            current_page: pageindx,
+            num_edge_entries: 2
+        });
+
+    }
+
+    //绑定设计需求
+    function BindDatas(id) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/design/' + id,
+            success: function (result) {
+                var json = result.data;
+                //来源
+                comeform = json.apply_source;
+                //基本资料
+                $("#address").html(json.apply_address ? json.apply_address : "</br>");
+                $("#gname").html(json.apply_gardenName ? json.apply_gardenName : "</br>");
+                $("#tname").html(json.apply_name);
+                $("#tmobile").html(json.apply_phone);
+                //完善资料
+                $("#nature").html(json.apply_nature ? json.apply_nature : "</br>");
+                $("#budget").html(json.apply_budget ? json.apply_budget : "</br>");
+                $("#area").html(json.apply_area ? json.apply_area : '</br>');
+                $("#style").html(json.apply_style ? json.apply_style : '</br>');
+                $("#time").html(json.apply_time ? json.apply_time : '</br>');
+                $("#apply_content").html(json.apply_content ? json.apply_content : '</br>');
+                //上传的图片
+                GetImgs(id);
+            }
+        })
+    }
+
+    //绑定设计方案
+    function BindPlans(applyid) {
+        $.ajax({
+            type: 'get',
+            url: '/v1/design/GetDesignPlan?applyid=' + applyid,
+            dataType: 'json',
+            processData: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                var resultData = result.data;
+                console.log(resultData);
+                $("#divplan").empty();
+                $.each(resultData, function (i, obj) {
+                    $("#divplan").append("<fieldset><legend>" + obj.designFilePath + "</legend>");
+                    $("#divplan").append("<h3 style='margin-top: 0px;'><a href='/upload/designplan/" + obj.applyId + "/" + obj.designFilePath + "' target=_blank>" + obj.designFilePath + "</a></h3>");
+                    $("#divplan").append("<p class='text-sm'>" + (obj.createTime ? moment(obj.createTime).format('YYYY-MM-DD') : '') + "</p>");
+                    $("#divplan").append("<p>" + (obj.designDesc ? obj.designDesc : '') + "</p>");
+                    $("#divplan").append("</fieldset>");
+                });
+            }
+        });
+    }
+
+    function GetImgs(id) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/file/GetFiles?id=' + id,
+            success: function (result) {
+                if (result.data) {
+                    var array = result.data.split(",");
+                    for (var i = 0 ; i < array.length ; i++) {
+                        $("#divimgs").append("<img class='img-responsive' src='/upload/applydesign/" + id + "/" + array[i] + "' />");
+                    }
+                }
+            }
+        })
+    }
+</script>

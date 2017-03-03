@@ -1,0 +1,251 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<div class="row" id="activity_pane">
+    <div class="">
+        <div class="detailBox">
+            <div class="detImgBox" id="imgcontainer"><img id="babyimg" alt=""><i></i></div>
+        </div>
+
+        <div class="detailWrapper">
+            <div class="detailTitle">小芦苇</div>
+            <div class="detailstat">
+                <div class="detailcolumn">
+                    <h3>编号</h3>
+                    <p></p>
+                </div>
+                <div class="detailcolumn">
+                    <h3>年龄</h3>
+                    <p></p>
+                </div>
+                <div class="detailcolumn">
+                    <h3>排名</h3>
+                    <p></p>
+                </div>
+                <div class="detailcolumn">
+                    <h3>集赞数</h3>
+                    <p id="txtlikes"></p><!--最多8位数-->
+                </div>
+            </div>
+
+            <div class="detailtext"><span class="roseo">#我是小学霸#</span></div>
+
+            <!--拉票点赞-->
+            <div class="picfull mt20">
+                <a href="#" id="btnlikes" class="detailBtn"><img src="@Url.Content("/Content/xueba/images/big-liked.png")"></a>
+                <a href="#" id="btnshare" class="detailBtn"><img src="@Url.Content("/Content/xueba/images/canvass.png")"></a>
+            </div>
+
+            <!--地址显示-->
+            <div class="addbox" style="display:none;">
+                <div>
+                    <span class="grey">收件人</span>
+                    <span class="text"></span>
+                </div>
+                <div>
+                    <span class="grey">联系电话</span>
+                    <span class="text"></span>
+                </div>
+                <div>
+                    <span class="grey">收货地址</span>
+                    <span class="text"></span>
+                </div>
+                <div>
+                    <span class="grey">具体地址</span>
+                    <span class="text"></span>
+                </div>
+            </div>
+
+            <!--填写地址按钮-->
+            <div class="writebox" style="display:none;">
+                <a href="@Url.Action("editadd", new { id=@ViewBag.id, uid=@ViewBag.uid, source=@ViewBag.source })"><img src="@Url.Content("~/Content/xueba/images/write.png")" class="w60"></a>
+                <p class="tips"><i></i><span>确保奖品妥妥收到哦！</span></p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div class="backHome"><a href="@Url.Action("index", new { uid=@ViewBag.uid, source=@ViewBag.source })" class="roseo">返回首页</a></div>
+<div id="goodcover1"></div>
+
+
+<script type="text/javascript">
+    $(function () {
+        var id = '@ViewBag.id';
+        BindInfo(id);
+        fenxiang(id);
+    })
+
+    function fenxiang(id) {
+        var source = '@ViewBag.source';
+        var uid = '@ViewBag.uid';
+        if (source.indexOf("android") >= 0) {
+            //安卓分享
+            JavaScriptInterface.getBannerShare("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/Detail?id=" + id + "", "我是小学霸", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+        if (source.indexOf("ios") >= 0) {
+            //苹果分享
+            shareWebView("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/Detail?id=" + id + "", "我是小学霸", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+    }
+
+    $("#btnlikes").click(function () {
+        if ($.cookie("vote") != null) {
+            easyDialog.open({
+                container: {
+                    content: '一天只能投一次哦！',
+                },
+                autoClose: 2000
+            });
+            return;
+        } else {
+            AddLikes('@ViewBag.id');
+        }
+    })
+
+    $("#btnshare").click(function () {
+        $('#code').center();
+        $('#goodcover1').show();
+        $('#code').fadeIn();
+    });
+
+    $('#goodcover1').click(function () {
+        $('#code').hide();
+        $('#goodcover1').hide();
+    });
+
+    //投票
+    function AddLikes(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/v1/superscholar/AddLikes',
+            data: { "": id },
+            success: function (result) {
+                $(".detailstat div").eq(3).find("p").html(parseInt($("#txtlikes").text()) + 1); //票数加1
+                easyDialog.open({
+                    container: {
+                        content: '谢谢投票!！',
+                    },
+                    autoClose: 2000
+                });
+                //写cookie到客户端
+                $.cookie("vote", "XXX", { expires: 1, path: "/" });
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+
+    function BindInfo(id) {
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: '/v1/superscholar/' + parseInt(id),//目标地址
+            beforeSend: function () {
+                //$("#preview").showLoading();
+                //$("#activity_pane").showLoading();
+               
+            },
+            complete: function () {
+                //$("#activity_pane").hideLoading();
+                //$("#preview").hideLoading();
+            },
+            success: function (json) {
+                var data = json.data;
+                if (data) {
+                    console.log(data);
+                    var likescount = data.likes;
+                    if (likescount >= 88) {
+                        //点赞积满时
+                        $('.detailBox').append("<img src='@Url.Content("~/Content/xueba/images/big-full-star.png")' class='bigstar'>");
+
+                        var uid = '@ViewBag.uid';
+                        if (!uid)
+                        {
+                            uid = $.cookie("ucode");
+                        }
+                        if (uid == data.uid) {
+                            if (data.receiveName && data.phone) {
+                                $(".addbox").show();
+                                $('.addbox div').eq(0).find("span").eq(1).html(data.receiveName);
+                                $('.addbox div').eq(1).find("span").eq(1).html(data.phone);
+                                $('.addbox div').eq(2).find("span").eq(1).html(data.area);
+                                $('.addbox div').eq(3).find("span").eq(1).html(data.address);
+                            } else {
+                                $(".writebox").show();
+                            }
+                        }
+                    }
+                    else {
+                        $('.detailBox').append("<img src='@Url.Content("~/Content/xueba/images/big-star.png")' class='bigstar'>");
+                    }
+                    //var imgurl = data.imgurl ? "" : "";
+                    var copimg = obj.imgUrl + '@Html.Raw("@500w_500h_100q")';
+                    if (data.imgUrl.substring(0, 4) == "http") {
+                        $("#babyimg").attr("src", copimg);
+                    } @*else if (data.imgUrl =="") {
+                        $("#babyimg").attr("src", "@Url.Content("~/Content/xueba/images/default-big-img.png")");           
+                    }*@
+                    else {
+                        $("#babyimg").attr("src", '@Url.Content("/upload/activity/xueba/")' + data.imgUrl);
+                    }
+                    $(".detailTitle").html(data.name);
+                    $(".detailstat div").eq(0).find("p").html(pad(data.id, 3));
+                    $(".detailstat div").eq(1).find("p").html(data.age + "岁");
+                    $(".detailstat div").eq(2).find("p").html(data.rank);
+                    $(".detailstat div").eq(3).find("p").html(data.likes);
+                    $(".detailtext").append(data.describe ? data.describe : "");
+
+                }
+            }
+        })
+    }
+
+    jQuery.fn.center = function (loaded) {
+        var obj = this;
+        body_width = parseInt($(window).width());
+        body_height = parseInt($(window).height());
+        block_width = parseInt(obj.width());
+        block_height = parseInt(obj.height());
+
+        left_position = parseInt((body_width / 2) - (block_width / 2) + $(window).scrollLeft());
+        if (body_width < block_width) {
+            left_position = 0 + $(window).scrollLeft();
+        };
+
+        top_position = parseInt((body_height / 2) - (block_height / 2) + $(window).scrollTop());
+        if (body_height < block_height) {
+            top_position = 0 + $(window).scrollTop();
+        };
+
+        if (!loaded) {
+
+            obj.css({
+                'position': 'absolute'
+            });
+            obj.css({
+                'top': ($(window).height() - $('#code').height()) * 0.5,
+                'left': left_position
+            });
+            $(window).bind('resize', function () {
+                obj.center(!loaded);
+            });
+            $(window).bind('scroll', function () {
+                obj.center(!loaded);
+            });
+
+        } else {
+            obj.stop();
+            obj.css({
+                'position': 'absolute'
+            });
+            obj.animate({
+                'top': top_position
+            }, 200, 'linear');
+        }
+    }
+</script>

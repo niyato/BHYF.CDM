@@ -1,0 +1,328 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type">
+    <meta content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <title>免费环创设计-申请免费设计</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    @Scripts.Render("~/bundles/jquery")
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/theme.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/zyupload/zyupload-1.0.0.min.css")">
+    <script type="text/javascript" src="@Url.Content("~/Scripts/checkbox.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.showLoading.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.dialog.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/easydialog.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/labelauty.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/mobiscroll.2.13.2.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/zyupload/zyupload.basic-1.0.0.js")"></script>
+    <style>
+        .addbtn {
+            width: 110px;
+            height: 100px;
+            background: url( '../content/images/loading.gif' );
+            background-size: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-left: 15px;
+        }
+
+        .glyphicon-folder-open, .hidden-xs {
+            opacity: 0;
+        }
+
+        .file-preview {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="activity_pane">
+        <div class="infolist">
+            <ul>
+                <li>
+                    <div class="fl">园所性质</div>
+                    <div data-role="fieldcontain" class="demo-select fr">
+                        <select id="apply_nature" class="demo-test-select frm_input" data-role="none">
+                            <option value="">请选择</option>
+                            <option value="公立">公立</option>
+                            <option value="私立">私立</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </li>
+                <li>
+                    <div class="fl">预算金额</div>
+                    <div data-role="fieldcontain" class="demo-select fr">
+                        <select id="apply_budget" class="demo-test-select frm_input" data-role="none">
+                            <option value="">请选择</option>
+                            <option value="5万以内">5万以内</option>
+                            <option value="5-10万">5-10万</option>
+                            <option value="10-20万">10-20万</option>
+                            <option value="20万以上">20万以上</option>
+                        </select>
+                    </div>
+                </li>
+                <li>
+                    <div class="fl" style="margin-bottom:0;">环创区域</div>
+                    <div class="checkbox">
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_area" value="户外" />
+                            <label class="check_label">
+                                <i class="checkbox_icon "></i>
+                                <em class="checkbox_text">户外</em>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_area" value="区角" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">区角</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_area" value="主题室" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">主题室</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_area" value="整体创设" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">整体创设</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_area" value="其他" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">其他</span>
+                            </label>
+                        </span>
+                    </div>
+                </li>
+                <li>
+                    <div class="fl" style="margin-bottom:0;">主题风格</div>
+                    <div class="checkbox">
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="科学" />
+                            <label class="check_label">
+                                <i class="checkbox_icon "></i>
+                                <em class="checkbox_text">科学</em>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="美术" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">美术</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="音乐" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">音乐</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="阅览室" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">阅览室</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="体感" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">体感</span>
+                            </label>
+                        </span>
+                        <span class="checkbox_item">
+                            <input type="checkbox" name="apply_style" value="其他" />
+                            <label class="check_label">
+                                <i class="checkbox_icon"></i>
+                                <span class="checkbox_text">其他</span>
+                            </label>
+                        </span>
+                    </div>
+                </li>
+                <li>
+                    <div class="fl">预计安装时间</div>
+                    <div class="fr"><input type="text" id="apply_time" placeholder="请填写" class="frm_input" maxlength="15"></div>
+                </li>
+                <li>
+                    <div class="fl">需求描述</div>
+                    <div>
+                        <textarea id="apply_content" class="frm_info" cols="30" rows="5" maxlength="200"
+                                  placeholder="请简要填写您的需求，例如园所大小、面积等"></textarea>
+                    </div>
+                </li>
+                <li id="div1" style="margin-bottom: 24px;">
+                    <div class="clear">
+                        <div class="fl">上传图片</div>
+                    </div>
+
+                    <div id="zyupload" class="zyupload"></div>
+                    <script type="text/javascript">
+                        $(function () {
+                            var aid = '@ViewBag.applyid';
+                            var source = '@ViewBag.source';
+
+                            //参数{input类名，选择类型(单选or多选)}
+                            $(".check_label").checkbox();
+
+                            if (source.indexOf("android") < 0) {
+                                // 初始化插件
+                                $("#zyupload").zyUpload({
+                                    width: "100%",                 // 宽度
+                                    height: "auto",                 // 宽度
+                                    itemWidth: "140px",                 // 文件项的宽度
+                                    itemHeight: "140px",                 // 文件项的高度
+                                    url: '/v1/file/upload?aid=' + aid, //上传的地址
+                                    fileType: ["jpg", "png", "jpeg"],// 上传文件的类型
+                                    multiple: true,                    // 是否可以多个文件上传
+                                    dragDrop: false,                   // 是否可以拖动上传文件
+                                    tailor: false,                   // 是否可以裁剪图片
+                                    del: true,                    // 是否可以删除文件
+                                    finishDel: false,  				  // 是否在上传文件完成后删除预览
+                                    /* 外部获得的回调接口 */
+                                    onSelect: function (selectFiles, allFiles) {    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                                        console.info("当前选择了以下文件：");
+                                        console.info(selectFiles);
+                                    },
+                                    onDelete: function (file, files) {              // 删除一个文件的回调方法 file:当前删除的文件  files:删除之后的文件
+                                        console.info("当前删除了此文件：");
+                                        console.info(file.name);
+                                    },
+                                    onSuccess: function (file, response) {          // 文件上传成功的回调方法
+                                        console.info("此文件上传成功：");
+                                        console.info(file.name);
+                                        console.info("此文件上传到服务器地址：");
+                                        console.info(response);
+                                        //$("#uploadInf").append("<p>上传成功，文件地址是：" + response + "</p>");
+                                    },
+                                    onFailure: function (file, response) {          // 文件上传失败的回调方法
+                                        console.info("此文件上传失败：");
+                                        console.info(file.name);
+                                    },
+                                    onComplete: function (response) {           	  // 上传完成的回调方法
+                                        console.info("文件上传完成");
+                                        console.info(response.data);
+                                        PostInfo();
+                                    }
+                                });
+                            }
+                            else {
+                                $("#div2").show();
+                                $("#div1").hide();
+                            }
+
+                        });
+                    </script>
+                </li>
+                <li id="div2" style="display: none; margin-bottom: 24px;">
+                    <div class="fl">上传图片</div>
+                    <ul class="parklist">
+                        <li><a href="javascript:void(0)" onclick="showAndroidToast()"><img src="@Url.Content("~/Content/images/add.png")" class="greybor"></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div style="height:38px;width:100%;"></div>
+        <div class="applybtn1">
+            <button class="btn" id="js_confirm">提交申请</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function showAndroidToast() {
+            var aid = '@ViewBag.applyid';
+            JavaScriptInterface.showActionSheetDialog(3, "http://"+"@HttpContext.Current.Request.Url.Host.ToString()" + "/v1/file/upload?aid="+aid);
+        }
+
+        //返回上传后的图片名称并且显示
+        function getuploadimgs(imgs) {
+            var aid = '@ViewBag.applyid';
+            var array = imgs.split(",");
+            for (var i = 0 ; i < array.length ; i++) {
+                $("ul .parklist").prepend("<li><img src='/upload/applydesign/" + aid + "/" + array[i] + "'></li>");
+            }
+        }
+
+        $("#js_confirm").on("click", function () {
+            jConfirm('您确定提交申请？', function () {
+                var source = '@ViewBag.source';
+                if (source.indexOf("android") < 0) {
+                    $(".upload_btn").click();
+                } else {
+                    PostInfo();
+                }
+            }, "");
+        });
+
+        function PostInfo() {
+            var apply_area = "";
+            var apply_style = ""; 
+            $("input[type=checkbox][name=apply_area]:checked").each(function () {
+                apply_area += $(this).attr("value") + ",";
+            });
+            $("input[type=checkbox][name=apply_style]:checked").each(function () {
+                apply_style += $(this).attr("value") + ",";
+            });
+
+            apply_area = apply_area ? apply_area.substring(0, apply_area.length - 1) : "";
+            apply_style = apply_style ? apply_style.substring(0, apply_style.length - 1) : "";
+
+            var id = parseInt('@ViewBag.applyid');
+            var data = {
+                "apply_id": id,
+                "apply_nature": $("#apply_nature").val(),
+                "apply_budget": $("#apply_budget").val(),
+                "apply_area": apply_area,
+                "apply_style": apply_style,
+                "apply_time": $("#apply_time").val(),
+                "apply_content": $("#apply_content").val(),
+            };
+            console.log(data);
+            if (id > 0)
+                $.ajax({
+                    type: 'PUT',
+                    url: '/v1/design',
+                    dataType: 'json',
+                    processData: false,
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    beforeSend: function () {
+                        // 禁用按钮防止重复提交
+                        $("#js_confirm").attr({ disabled: "disabled" });
+                        $("#activity_pane").showLoading();
+                    },
+                    complete: function () {
+                        $("#activity_pane").hideLoading();
+                    },
+                    success: function (result) {
+                        window.location.href = '@Url.Action("Successful", new { applyid=@ViewBag.applyid})';
+                        return false;
+                    },
+                    error: function (einfo) {
+                        console.log(einfo + "修改失败");
+                    }
+                });
+        }
+    </script>
+
+</body>
+</html>

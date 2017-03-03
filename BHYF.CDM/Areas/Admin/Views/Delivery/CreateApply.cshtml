@@ -1,0 +1,680 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/lhgcalendar.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcore.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgcalendar.min.js")"></script>
+
+<script type="text/javascript">
+    J(function () {
+        J('#ApplyDate').calendar();
+        J('#UseDate').calendar();
+        J('#ReturnDate').calendar();
+    });
+
+    function opcal() {
+        J.calendar.Show();
+    }
+</script>
+
+<div class="rightContent">
+    <div class="rightContentBox">
+        <div class="subnav"><a href="">首页</a> > <a href="@Url.Action("ApplyList")">产品申请</a> > 新增申请</div>
+        <!--新增申请-->
+        <div class="bigTit mT20"><h3>产品申请单</h3></div>
+        <div id="activity_pane">
+            <form id="form1">
+                <div class="investment_f">
+
+                    <div class="clear"></div>
+                    <div class="investment_title">
+                        <div id="divagency" class="on">
+                            办事处
+                        </div>
+                        <div>
+                            代理商
+                        </div>
+                    </div>
+                    <div class="investment_con">
+                        <!--办事处信息  begin-->
+                        <div class="investment_con_list addsOffice">
+                            <div class="mR15">
+                                <label class="mR10">申请办事处</label>
+                                <select tabindex="7" id="Source" style="border: 1px solid #bdc3c7; height: 28px; width:136px;">
+                                    <option value="-1">请选择申请办事处</option>
+                                </select>
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">申请日期</label>
+                                <input class="searchInput" type="text" readonly id="ApplyDate" style="height:28px; line-height:normal;" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">申请人</label> 
+                                <input class="searchInput" type="text" id="Relation" value="@ViewBag.LoginUser" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">联系方式</label>
+                                <input class="searchInput" type="text" id="Phone" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">电子邮件</label>
+                                <input class="searchInput" type="text" id="Mail" />
+                            </div>
+                        </div>
+                        <!--办事处信息  end-->
+                        <!--代理商信息  begin-->
+                        <div class="investment_con_list addsOffice">
+                            <div class="mR15">
+                                <label class="mR10">代理商</label>
+                                <input class="searchInput" type="text" id="AgentSource" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">申请园所</label>
+                                <input class="searchInput" type="text" id="GardenName" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">联系人</label>
+                                <input class="searchInput" type="text" id="AgentRelation" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">联系方式</label>
+                                <input class="searchInput" type="text" id="AgentPhone" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">收货地址</label>
+                                <input class="searchInput" type="text" id="AgentAddress" />
+                            </div>
+                            <div class="mR15">
+                                <label class="mR10">安装时间</label>
+                                <input class="searchInput" type="text" readonly id="UseDate" style="height:28px" />
+                            </div>
+                        </div>
+                        <!--代理商信息  end-->
+                    </div>
+
+                    <div class="tR mT20 mB10">
+                        <button type="button" class="addsBtn" data-toggle="modal" data-target="#addSource" >添加商品</button>
+                    </div>
+                    <table style="width:100%" border="0" cellspacing="0" class="accTabbox">
+                        <tr>
+                            <th scope="col">名称规格型号</th>
+                            <th scope="col">销售赠送</th>
+                            <th scope="col">数量</th>
+                            <th scope="col">单价</th>
+                            <th scope="col">金额</th>
+                            <th scope="col">回款日期</th>
+                            <th scope="col">回款金额</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </table>
+                    <div class="tC mT20">
+                        <input type="submit" value="保存" class="preserveBtn">
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--弹出窗口 添加资源-->
+<div class="modal fade" id="addSource" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">添加商品</h4>
+
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form id="form2" class="form-horizontal">
+                        <div class="form-group ">
+                            <label for="sName" class="col-xs-3 control-label">名称规格型号：</label>
+                            <div class="col-xs-8 ">
+                                <select tabindex="7" id="ProductName">
+                                    <option value="">请选择发货商品</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sLink" class="col-xs-3 control-label">销售<b>/</b>赠送：</label>
+                            <div class="col-xs-8 ">
+                                <select tabindex="7" id="SaleType">
+                                    <option value="销售" selected="selected">销售</option>
+                                    <option value="赠送">赠送</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sLink" class="col-xs-3 control-label">数量：</label>
+                            <div class="col-xs-8 ">
+                                <input type="number" class="input-sm duiqi NumInput fl mR10" id="Number" onblur="jisuan()">
+                                @*<select class="dropdown" tabindex="7" id="Unit">
+                                  <option value="1">台</option>
+                                  <option value="2">个</option>
+                                  <option value="3">只</option>
+                                  <option value="4">根</option>
+                                  <option value="5">块</option>
+                               </select>*@
+      </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sOrd" class="col-xs-3 control-label">单价：</label>
+                            <div class="col-xs-8">
+                                <input type="number" class="form-control input-sm duiqi" id="Price" onblur="jisuan()">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sOrd" class="col-xs-3 control-label">金额：</label>
+                            <div class="col-xs-8">
+                                <input type="number" class="form-control input-sm duiqi" id="Sum">
+                            </div>
+                        </div>
+                     
+                        <div class="form-group">
+                            <label for="sOrd" class="col-xs-3 control-label">回款日期：</label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control input-sm duiqi" readonly id="ReturnDate" placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sOrd" class="col-xs-3 control-label">回款金额：</label>
+                            <div class="col-xs-8">
+                                <input type="number" class="form-control input-sm duiqi" id="ReturnPrice" placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sOrd" class="col-xs-3 control-label" id="txterrorinfo"></label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btncreate" type="button" class="preserveBtn">确定</button>
+                <button id="btncreateon" type="button" class="preserveBtn">继续添加</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        BindForm();
+        BindProduct();
+        BindAgencyName();
+    })
+
+    var plist = [];
+
+    function BindForm() {
+        var id = '@ViewBag.Id';
+        if (id > 0) {
+            $.ajax({
+                type: 'Get',
+                url: '/v1/delivery/' + id,
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () {
+                    $("#activity_pane").showLoading();
+                },
+                complete: function () {
+                    $("#activity_pane").hideLoading();
+                },
+                success: function (result) {
+                    //console.log(result.data);
+                    var json = result.data;
+                    $("#Source").val(json.source);
+                    $("#ApplyDate").val(json.applyDate);
+                    $("#Relation").val(json.relation);
+                    $("#Phone").val(json.phone);
+                    $("#Mail").val(json.mail);
+                    $("#AgentSource").val(json.agentSource);
+                    $("#GardenName").val(json.gardenName);
+                    $("#AgentRelation").val(json.agentRelation);
+                    $("#AgentPhone").val(json.agentPhone);
+                    $("#AgentAddress").val(json.agentAddress);
+                    $("#UseDate").val(json.useDate);
+
+                    $.each(json.deliveryApplyProducts, function (i, obj) {
+                        plist.push({
+                            "ApplyId": obj.applyId,
+                            "Pid": obj.pid,
+                            "ProductName": obj.productName,
+                            "Number": obj.number,
+                            "Price": obj.price,
+                            "Sum": obj.sum,
+                            "SaleType": obj.saleType,
+                            "ReturnDate": obj.returnDate,
+                            "ReturnPrice": obj.returnPrice
+                        });
+
+                        $(".accTabbox").append("<tr><td>" + obj.productName + "</td>"
+                            + "<td>" + obj.number + "</td>"
+                            + "<td>" + obj.price + "</td>"
+                            + "<td>" + obj.sum + "</td>"
+                            + "<td>" + obj.saleType + "</td>"
+                            + "<td>" + obj.returnDate + "</td>"
+                            + "<td>" + obj.returnPrice + "</td>"
+                            + "<td><a href='#'>删除</a></td></tr>");
+                    })
+
+                    $("table td").click(function () {
+                        $(this).parent().remove();
+                        var name = $(this).parent().find("td").eq(0).html();
+                        $.each(plist, function (i, obj) {
+                            if (obj["ProductName"] == name) {
+                                plist.splice(i, 1);
+                            }
+                        })
+                        console.log(plist);
+                    })
+                },
+                error: function (einfo) {
+                    console.log("获取信息失败" + einfo);
+                }
+            })
+        }
+    }
+
+   
+    $("#form1").submit(function (e) {
+        e.preventDefault();
+        CheckInfo();
+    })
+
+
+    ///验证输入
+    function CheckInfo() {
+        if ($("#divagency").attr("class") == "on") {
+            //var txtsource = $("#Source").val();
+            var txtsource = $("#Source").find("option:selected").text();
+            var txtapplydate = $("#ApplyDate").val();
+            var txtrelation = $("#Relation").val();
+            var txtphone = $("#Phone").val();
+            var txtmail = $("#Mail").val();
+            if (txtsource.trim() == '请选择申请办事处') {
+                easyDialog.open({
+                    container: {
+                        content: '申请办事处不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtapplydate.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '申请日期不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtrelation.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '申请人不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtphone.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '联系方式不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtmail.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '电子邮箱不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            var data = {
+                "ApplySource": "agancy",
+                "Source": txtsource,
+                "ApplyDate": txtapplydate,
+                "Relation": txtrelation,
+                "Phone": txtphone,
+                "Mail": txtmail
+            }
+        }
+        else {
+            var txtagentsource = $("#AgentSource").val();
+            var txtgardenname = $("#GardenName").val();
+            var txtagentrelation = $("#AgentRelation").val();
+            var txtagentphone = $("#AgentPhone").val();
+            var txtagentaddress = $("#AgentAddress").val();
+            var txtuserdate = $("#UseDate").val();
+            if (txtagentsource.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '代理商不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtgardenname.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '申请园所不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtagentrelation.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '联系人不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtagentphone.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '联系方式不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if (txtagentaddress.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '收货地址不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;   
+            }
+            if (txtuserdate.trim() == "") {
+                easyDialog.open({
+                    container: {
+                        content: '安装时间不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            var data = {
+                "ApplySource": "agent",
+                "AgentSource": txtagentsource,
+                "GardenName": txtgardenname,
+                "AgentRelation": txtagentrelation,
+                "AgentPhone": txtagentphone,
+                "AgentAddress": txtagentaddress,
+                "UseDate": txtuserdate
+            }
+        }
+        BeginPostForm(data);
+    }
+
+    //提交表单
+    function BeginPostForm(data) {
+        data["DeliveryApplyProducts"] = plist;
+        console.log(JSON.stringify(data));
+        if (plist.length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '请新增商品！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+        var id = '@ViewBag.Id';
+        if (id > 0)
+            UpdateApplyInfo(data);
+        else {
+            data["Memberid"] = '@ViewBag.memberid';
+            CreateApplyInfo(data);
+        }
+    }
+
+    //添加商品
+    $("#btncreate").click(function () {
+        AddProduct("hide");
+        Reset();
+    })
+    //继续添加商品
+    $("#btncreateon").click(function () {
+        AddProduct("goon");
+        Reset();
+    })
+
+    function CreateApplyInfo(data) {
+        $.ajax({
+            type: 'POST',
+            url: '/v1/delivery',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#preserveBtn").attr({ disabled: "disabled" });
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function () {
+                alert('添加成功');
+                window.location.href = '@Url.Action("ApplyList")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log("新增失败" + einfo);
+            }
+        })
+    }
+
+    function UpdateApplyInfo(data) {
+        var id = '@ViewBag.Id';
+        $.ajax({
+            type: 'PUT',
+            url: '/v1/delivery/' + id,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#preserveBtn").attr({ disabled: "disabled" });
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function () {
+                alert('修改成功');
+                window.location.href = '@Url.Action("ApplyList")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log("修改失败" + einfo);
+            }
+        })
+    }
+
+
+    function AddProduct(type) {
+        var pid = $("#ProductName").val();
+        var saletype = $("#SaleType").val();
+        var pnum = $("#Number").val();
+        var pprice = $("#Price").val();
+        var sum = $("#Sum").val();
+        var returndate = $("#ReturnDate").val();
+        var returnprice = $("#ReturnPrice").val();
+
+        if (pid == "") {
+            easyDialog.open({
+                container: {
+                    content:'请选择规格型号！',
+                },
+                autoClose: 500
+            });
+            //$("#txterrorinfo").html("<font color='red'>请选择规格型号<font>");
+            return false;
+        }
+
+        
+
+        if (pnum == "") {
+            easyDialog.open({
+                container: {
+                    content: '请输入数量！',
+                },
+                autoClose: 2000
+            });
+               // $("#txterrorinfo").html("<font color='red'>请输入数量<font>");
+                return false;
+            }
+        if (pprice == "") {
+            easyDialog.open({
+                container: {
+                    content: '请输入价格！',
+                },
+                autoClose: 2000
+            });
+                //$("#txterrorinfo").html("<font color='red'>请输入价格<font>");
+                return false;
+            }
+        if (returndate == "") {
+            easyDialog.open({
+                container: {
+                    content: '请输入回款日期！',
+                },
+                autoClose: 2000
+            });
+                //$("#txterrorinfo").html("<font color='red'>请输入回款日期<font>");
+                return false;
+            }
+        if (returnprice == "") {
+            easyDialog.open({
+                container: {
+                    content: '请输入回款金额！',
+                },
+                autoClose: 2000
+            });
+               // $("#txterrorinfo").html("<font color='red'>请输入回款金额<font>");
+                return false;
+            }
+
+            plist.push({
+                "ApplyId": '@ViewBag.Id',
+                "Pid": pid,
+                "SaleType": $("#SaleType").val(),
+                "ProductName": $("#ProductName").find("option:selected").text(),
+                "Number": pnum,
+                "Price": pprice,
+                "Sum": $("#Sum").val(),
+                "ReturnDate": returndate,
+                "ReturnPrice": returnprice
+            });
+
+            $(".accTabbox").append("<tr><td>" + $("#ProductName").find("option:selected").text() + "</td>"
+                              + "<td>" + $("#SaleType").val() + "</td>"
+                              + "<td>" + $("#Number").val() + "</td>"
+                              + "<td>" + $("#Price").val() + "</td>"
+                              + "<td>" + $("#Sum").val() + "</td>"
+                              + "<td>" + $("#ReturnDate").val() + "</td>"
+                              + "<td>" + $("#ReturnPrice").val() + "</td>"
+                              + "<td><a href='' >编辑</a><a href='#'>删除</a></td></tr>");
+            $("#form2")[0].reset();
+            if (type != "goon")
+                $('#addSource').modal('hide');
+         
+    }
+
+    //判断为赠送时，价格、金额，回款日期，回款金额为空或默认值
+    $(function () {
+        $('#SaleType').change(function (e) {
+            var opt = $("#SaleType").find("option:selected").text();
+            if (opt == '赠送') {
+                $("#Price").attr('value', 0);
+                $("#Price").attr('disabled', true);
+                $("#Sum").attr('value', 0);
+                $("#Sum").attr('disabled', true);
+                $("#ReturnDate").val("1970-01-01");
+                $("#ReturnDate").attr('disabled', true);
+                $("#ReturnPrice").attr('value', 0);
+                $("#ReturnPrice").attr('disabled', true);
+            }
+            else if (opt == '销售') {
+                Reset();
+            }
+        });
+    });
+      
+    //重新添加或继续添加商品重置表单输入框值
+    function Reset() {
+        $("#Price").attr('value', "");
+        $("#Price").attr('disabled', false);
+        $("#Sum").attr('value', "");
+        $("#Sum").attr('disabled', false);
+        $("#ReturnDate").val("");
+        $("#ReturnDate").attr('disabled', false);
+        $("#ReturnPrice").attr('value', "");
+        $("#ReturnPrice").attr('disabled', false);
+    }
+
+    //绑定发货商品
+    function BindProduct() {
+        $.getJSON("/v1/delivery/GetDeliveryProduct", function (result) {
+            var json = result.data;
+            if (json.length > 0) {
+                $.each(json, function (i, field) {
+                    if (field.status)
+                        $("#ProductName").append("<option value='" + field.pid + "'>" + field.productName + "</option>");
+                });
+            }
+        });
+    }
+
+
+    //计算添加商品金额
+    function jisuan() {
+        var count = parseInt($("#Number").val());
+        var price = parseInt($("#Price").val());
+        if (count > 0 && price > 0)
+            $("#Sum").val(count * price);
+    }
+
+    //删除申请单商品
+    function DeleteDeliveryApplyProduct(id) {
+        if (confirm("确定要删除吗？")) {
+            $.ajax({
+                url: '/v1/delivery/DeleteDeliveryApplyProduct?id=' + id,
+                type: 'delete',
+            }).done(function (res) {
+                alert(res.data);
+                window.location.reload();
+            }).fail(function (res) { });
+        }
+    }
+
+    //绑定办事处
+    
+    function BindAgencyName() {
+        $.getJSON("/v1/delivery/GetDeliveryInvoice", function (result) {
+            $("#Source").append(result.data.m_StringValue);
+        });
+    }
+
+    
+</script>

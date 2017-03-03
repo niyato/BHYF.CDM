@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+
+<div id="divload" style="top: 50%; right: 50%; position: absolute; padding: 0px; margin: 0px; z-index: 999"></div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>申请人</th>
+            <th>联系方式</th>
+            <th>申请时间</th>
+            <th>申请状态</th>
+            <th>方案状态</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+
+<script type="text/javascript">
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+
+    $(function () {
+        initData(0);
+    });
+
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0)
+            initData(page_id);
+    }
+
+    function initData(pageindx) {
+        var tbody = "";
+        var pageCount = "";
+        var reviewmanager = '@ViewBag.Memberid';
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: '/v1/design',//目标地址
+            async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+            data: "reviewmanager=" + reviewmanager + "&page=" + (pageindx + 1) + "&limit=" + pageSize,
+            beforeSend: function () { $("#divload").show(); $("#divpage").hide(); },//发送数据之前
+            complete: function () { $("#divload").hide(); $("#divpage").show(); },//接收数据完毕
+            success: function (json) {
+                //console.log(json);
+                var resultData = json.data;
+                pageCount = json.total;
+
+                if (resultData == "") {
+                    $("#divload").hide();
+                    return false;
+                }
+                $(".table tbody").empty();
+                $.each(resultData, function (i, obj) {
+                    $(".table tbody").append("<tr>" +
+                        "<td>" + obj.apply_id + "</td>" +
+                        "<td>" + obj.apply_name + "</td>" +
+                        "<td>" + (obj.apply_phone ? obj.apply_phone : '') + "</td>" +
+                        "<td>" + (obj.apply_createTime ? moment(obj.apply_createTime).format('YYYY-MM-DD') : '') + "</td>" +
+                        "<td>" + GetStatusStr(obj.apply_status) + "</td>" +
+                        GettdByItem(obj.plan_status) +
+                        "<td><a href='@Url.Action("EditDemand")?id=" + obj.apply_id + "'>编辑</a>  <a href='@Url.Action("DesignPlan")?applyid=" + obj.apply_id + "'>方案</a>" +
+                        "</tr>");
+                });
+            }
+        });
+
+        if (pageCount != 0) {
+            $("#divpage").pagination(pageCount, {
+                callback: pageselectCallback,
+                prev_text: '<< 上一页',
+                next_text: '下一页 >>',
+                items_per_page: 10,
+                num_display_entries: 6,
+                current_page: pageindx,
+                num_edge_entries: 2
+            });
+        }
+    }
+
+</script>

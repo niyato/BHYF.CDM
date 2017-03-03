@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    <script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+</head>
+<body>
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Action("hot")">活动热度统计</a></li>
+        <li><a href="@Url.Action("details")">活动报名人数统计</a></li>
+        <li><a href="@Url.Action("Acivity")">统计</a></li>
+        <li><a href="@Url.Action("SignUp")">育儿达人报名统计</a></li>
+    </ul>
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

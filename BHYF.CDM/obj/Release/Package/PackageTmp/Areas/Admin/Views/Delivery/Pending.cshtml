@@ -1,0 +1,274 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+
+<div id="activity_pane">
+    <div class="rightContent">
+        <div class="rightContentBox">
+            <div class="subnav"><a href="">首页</a> > 申请列表 > 申请详情</div>
+            <!--产品申请单-->
+            <div class="bigTit mT20 mB10"><a href="javascript:history.go(-1)" class="fl back">返回列表</a>@Html.ActionLink("发货", "Invoice", new { id = @ViewBag.Id }, new { @class = "addsBtn fr", @style = "display:none;" })<h3>产品申请单</h3></div>
+
+            <div class="detailEditBox">
+                <!--申请表单信息-->
+                <div class="applicationShow" id="applyshow">
+                </div>
+                <!--申请产品信息-->
+                <table width="100%" border="0" cellspacing="0" class="accTabbox" id="tlist">
+                    <tr>
+                        <th scope="col">名称规格型号</th>
+                        <th scope="col">数量</th>
+                        <th scope="col">单价</th>
+                        <th scope="col">金额</th>
+                        <th scope="col">销售赠送</th>
+                        <th scope="col">回款日期</th>
+                        <th scope="col">回款金额</th>
+                    </tr>
+                </table>
+                <div class="mT20">
+                    <label>总经理：</label>
+                    <input type="text" class="agreeInput mR25">
+                    <label>主管总监：</label>
+                    <input type="text" class="agreeInput mR25">
+                    <label>经理：</label>
+                    <input type="text" class="agreeInput">
+                </div>
+                <h4 class="mT10">备注：先款后货业务：注明回款金额，并由财务部出纳确认是否回款；先货后款业务：办事处必须承诺回款时间并及时催收应收账款。</h4>
+
+            </div>
+            <div class="mT20 Copybox">
+                <h3>产品申请单复印件：</h3>
+                <p><img id="applyimg" style="height: 600px; width: auto; max-width: 800px; display: none;"></p>
+            </div>
+
+
+
+            <!--发货单-->
+            <div id="deliverydiv" style="display:none;">
+                <div class="bigTit mT20 mB10"><h3>发货单</h3></div>
+                <div class="mT20">
+                    <span class="fl"></span>
+                    <span class="fr"></span>
+                </div>
+
+                <div class="detailEditBox fl" style="width:100%">
+
+                    <!--发货信息--->
+                    <div class="pendingShow">
+                    </div>
+
+                    <table id="tlistdelivery" width="100%" border="0" cellspacing="0" class="accTabbox">
+                        <tr>
+                            <th scope="col">序号</th>
+                            <th scope="col">产品名称</th>
+                            <th scope="col">数量</th>
+                            <th scope="col">备注</th>
+                        </tr>
+                    </table>
+                    <div class="mT20 dealtbox" id="diliveryotherinfo">
+                    </div>
+                </div>
+                <div class="mT20 Copybox">
+                    <h3>发货单凭证：</h3>
+                    <p><img id="deliveryimg" style="height: 600px; width: auto; max-width: 800px; display: none;"></p>
+                </div>
+            </div>
+
+          
+                <!--收货回执单-->
+            <div class="bigTit mT20 mB10" id="btnreceived"><h3>收货回执单</h3></div>
+            <div id="receivediv" style="display:none;">
+                <div class="detailEditBox">
+                    <div class="smallTit">收货方</div>
+                    <!--发货信息--->
+                    <div class="applicationShow" id="receiptshow">
+
+                    </div>
+                    <div class="smallTit mB10">物品清单</div>
+                    <table id="tlistreceive" width="100%" border="0" cellspacing="0" class="accTabbox">
+                        <tr>
+                            <th scope="col">名称规格型号</th>
+                            <th scope="col">数量</th>
+                            <th scope="col">备注</th>
+                        </tr>
+                    </table>
+                    <div class="smallTit mB10 mT10">收货确认</div>
+
+                    <div id="receiveinfo" class="mT20 dealtbox">
+                    </div>
+                </div>
+                <div class="mT20 Copybox">
+                    <h3>收货回执单凭证：</h3>
+                    <p><img id="receiveimg" style="height:600px;width:auto;max-width:800px;display:none;"></p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var id = '@ViewBag.Id';
+        BindData(id);
+        BindDelivery(id);
+        BindReceipt(id);
+    })
+
+    function BindData(id) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/' + id,//目标地址
+            beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                var resultData = json.data;
+                BindApply(resultData);
+                BindProduct(resultData.deliveryApplyProducts);
+
+                //领导签字信息绑定
+                $(".mT20").find("input").eq(2).val(resultData.departmentLeaderSign ? resultData.departmentLeaderSign : "");
+                $(".mT20").find("input").eq(1).val(resultData.companyLeaderSign ? resultData.companyLeaderSign : "");
+                $(".mT20").find("input").eq(0).val(resultData.bossSign ? resultData.bossSign : "");
+
+                if (resultData.img) {
+                    $("#applyimg").show();
+                    $("#applyimg").attr("src", resultData.img);
+                }
+                ///发货单按钮
+                var powerstr = '@ViewBag.powerstr';
+                if (powerstr.indexOf("factorydelivery") >= 0 && resultData.status == "WaitSend") {
+                    $(".addsBtn").show();
+                }
+                //收回回执单按钮
+                if (powerstr.indexOf("reveivegoods") >= 0 && resultData.status == "WaitReceived") {
+                    $("#btnreceived").prepend("<a href='@Url.Action("Receipt")?id=" + id + "' class='fr back'>签收</a>");
+                }
+
+            }
+        });
+    }
+
+    //绑定申请表单信息
+    function BindApply(json) {
+        $("#applyshow").empty();
+        if (json.applySource == "agancy") {
+            $("#applyshow").append("<p><span>申请办事处：</span>" + json.source + "</p>"
+                + "<p><span>申请日期：</span>" + json.applyDate + "</p>"
+                + "<p><span>申请人：</span>" + json.relation + "</p>"
+                + "<p><span>联系方式：</span>" + json.phone + "</p>"
+                + "<p><span>电子邮件：</span>" + json.mail + "</p>");
+        }
+        if (json.applySource == "agent") {
+            $("#applyshow").append("<p><span>代理商：</span>" + json.agentSource + "</p>"
+                + "<p><span>申请园所：</span>" + json.gardenName + "</p>"
+                + "<p><span>联系人：</span>" + json.agentRelation + "</p>"
+                + "<p><span>联系方式：</span>" + json.agentPhone + "</p>"
+                 + "<p><span>收货地址：</span>" + json.agentAddress + "</p>"
+                + "<p><span>安装时间：</span>" + json.useDate + "</p>");
+        }
+    }
+
+    //绑定发货商品信息
+    function BindProduct(json) {
+        $.each(json, function (i, obj) {
+            $("#tlist").append("<tr>"
+                    + "<td>" + obj.productName + "</td>"
+                    + "<td>" + obj.number + "</td>"
+                    + "<td>" + obj.price + "</td>"
+                    + "<td>" + obj.sum + "</td>"
+                    + "<td>" + obj.saleType + "</td>"
+                    + "<td>" + obj.returnDate + "</td>"
+                    + "<td>" + obj.returnPrice + "</td>"
+                    + "</tr>");
+        })
+
+        $.each(json, function (i, obj) {
+            $("#tlistdelivery").append("<tr>"
+                    + "<td>" + obj.id + "</td>"
+                    + "<td>" + obj.productName + "</td>"
+                    + "<td>" + obj.number + "</td>"
+                    + "<td>" + obj.saleType + "</td>"
+                    + "</tr>");
+        })
+
+        $.each(json, function (i, obj) {
+            $("#tlistreceive").append("<tr>"
+                    + "<td>" + obj.productName + "</td>"
+                    + "<td>" + obj.number + "</td>"
+                    + "<td>" + obj.saleType + "</td>"
+                    + "</tr>");
+        })
+    }
+
+    //绑定发货单
+    function BindDelivery(id) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/GetDeliveryInvoice?applyid=' + id,//目标地址
+            success: function (json) {
+                console.log(json);
+                if (json.data) {
+                    $("#deliverydiv").show();
+                    var resultData = json.data;
+                    //发货单
+                    $(".mT20").find("span").eq(0).html("发货日期：" + resultData.deliveryDate);
+                    $(".mT20").find("span").eq(1).html("发货单号：" + resultData.deliveryNumber);
+                    //发货信息
+                    $(".pendingShow").append("<p><span>分公司办事处名称：</span>" + (resultData.agencyName ? resultData.agencyName : "") + "</p>"
+                            + "<p><span>代理商名称：</span>" + (resultData.agentName ? resultData.agentName : "") + "</p>"
+                            + "<p><span>客户名称：</span>" + (resultData.clientName ? resultData.clientName : "") + "</p>"
+                            + "<p><span>收货地址：</span>" + resultData.receiveAddress + "</p>"
+                            + "<p><span>收货人名称：</span>" + resultData.receiveName + "</p>"
+                            + "<p><span>联系方式：</span>" + resultData.phoneNumber + "</p>"
+                            + "<p><span>物流公司：</span>" + resultData.sendCompany + "</p>"
+                            + "<p><span>物流单号：</span>" + resultData.sendNumber + "</p>");
+
+                    $("#diliveryotherinfo").append("<span>质检：张三</span>"
+                            + "<span>件数：" + (resultData.massCheck ? resultData.massCheck : "") + "</span>"
+                            + "<span>包装：" + (resultData.packing ? resultData.packing : "") + "</span>"
+                            + "<span>保管员：" + (resultData.keepName ? resultData.keepName : "") + "</span>"
+                            + "<span>备注：" + (resultData.tabName ? resultData.tabName : "") + "</span>");
+
+                    if (resultData.img) {
+                        $("#deliveryimg").show();
+                        $("#deliveryimg").attr("src", resultData.img);
+                    }
+                }
+                else {
+                    $("#receivediv").hide();
+                }
+            }
+        });
+    }
+
+    //绑定收货单
+    function BindReceipt(id) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/GetDeliveryReceipt?applyid=' + id,//目标地址
+            success: function (json) {
+                if (json.data) {
+                    $("#receivediv").show();
+                    var resultData = json.data;
+                    //发货信息
+                    $("#receiptshow").append("<p class='mT10'><span>单位名称：</span>" + resultData.receiveCompany + "</p>"
+                            + "<p><span>地址：</span>" + resultData.receiveAddress + "</p>"
+                            + "<p><span>联系人：</span>" + resultData.receiveName + "</p>"
+                            + "<p><span>联系方式：</span>" + resultData.receivePhone + "</p>");
+                    $("#receiveinfo").append(" <span>姓名：" + resultData.takeName + "</span>"
+                            + "<span>联系方式：" + resultData.takePhone + "</span>");
+
+                    if (resultData.img) {
+                        $("#receiveimg").show();
+                        $("#receiveimg").attr("src", resultData.img);
+                    }       
+                }
+            }
+        });
+    }
+</script>

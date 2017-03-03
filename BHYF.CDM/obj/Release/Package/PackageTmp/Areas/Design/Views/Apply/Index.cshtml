@@ -1,0 +1,49 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type">
+    <meta content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <title>免费环创设计-填写申请表</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    @Scripts.Render("~/bundles/jquery")
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?9f63d6b99841297563b6aab90a27ac9b";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+</head>
+<body>
+    <div>
+        <img src="@Url.Content("~/Content/images/pic-01.png")" width="100%">
+        <img src="@Url.Content("~/Content/images/pic-02.png")" width="100%">
+        <img src="@Url.Content("~/Content/images/pic-03.png")" width="100%">
+    </div>
+    <div style="height:38px;width:100%;"></div>
+    <div class="applybtn1">
+        <button type="button" id="btnsubmit" class="btn">立即申请</button>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $("#btnsubmit").on("click", function () {
+                var source = '@ViewBag.source';
+                var userid = '@ViewBag.userid';
+                window.location.href = "@Url.Action("ApplyInfo")" + "?source=" + source + "&userid=" + userid;
+            })       
+        });
+    </script>
+</body>
+</html>

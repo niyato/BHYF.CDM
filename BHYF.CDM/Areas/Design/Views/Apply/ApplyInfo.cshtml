@@ -1,0 +1,182 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type">
+    <meta content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <title>免费环创设计-申请免费设计</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    <!--身份选择-->
+    @Scripts.Render("~/bundles/jquery")
+    <script type="text/javascript" src="@Url.Content("~/Scripts/checkbox.js")"></script>
+    <!--确定弹窗-->
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.showLoading.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.dialog.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/easydialog.min.js")"></script>
+
+    <!--该样式包含dialog.css-->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/mobile-select-area.css")">
+    <script type="text/javascript" src="@Url.Content("~/Scripts/mobile-select-area.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/dialog.js")"></script>
+</head>
+<body>
+    <input type="hidden" id="SERVER_TIME" value="@ViewBag.curtime" />
+    <script>
+        //每次webview重新打开H5首页，就把server time记录本地存储
+        var SERVER_TIME = document.getElementById("SERVER_TIME");
+        var REMOTE_VER = SERVER_TIME && SERVER_TIME.value;
+        if (REMOTE_VER) {
+            var LOCAL_VER = sessionStorage && sessionStorage.PAGEVERSION;
+            if (LOCAL_VER && parseInt(LOCAL_VER) >= parseInt(REMOTE_VER)) {
+                //说明html是从本地缓存中读取的
+                location.reload(true);
+            } else {
+                //说明html是从server端重新生成的，更新LOCAL_VER
+                sessionStorage.PAGEVERSION = REMOTE_VER;
+            }
+        }
+    </script>
+
+    <div id="activity_pane">
+        <div class="infolist">
+            <ul>
+                <li>
+                    <div class="fl">您的姓名</div>
+                    <div class="fr"><input type="text" id="txtname" placeholder="请填写姓名" class="frm_input"></div>
+                </li>
+                <li>
+                    <div class="fl">联系方式</div>
+                    <div class="fr"><input type="text" id="txtphone" placeholder="请填写联系方式" class="frm_input"></div>
+                </li>
+                <li>
+                    <div class="fl">园所位置</div>
+                    <div class="content-block fr">
+                        <input id="txtaddress" type="text" readonly name="input_area" class="frm_input" placeholder="请选择" />
+                    </div>
+                </li>
+                <li>
+                    <div class="fl">园所名称</div>
+                    <div class="fr"><input type="text" id="txtgardenname" placeholder="请填写园所名称" class="frm_input"></div>
+                </li>
+            </ul>
+            <div style="height:10px; float:left; width:100%;"></div>
+        </div>
+
+        <div class="applybtn">
+            <p style="color:#696969;">完善更多资料，我们可以更快更好的为您提供效果图哦~</p>
+            <button type="button" class="btn greenbg" id="js_moreinfo">完善更多资料</button>
+            <button type="button" class="btn bluebg" id="js_confirm">线下联系</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/LAreaData1.js")"></script>
+    <script type="text/javascript">
+
+        var selectArea2 = new MobileSelectArea();
+        selectArea2.init({
+            trigger: '#txtaddress',
+            value: $('#txtaddress').data('text'),
+            data: LAreaData,
+            eventName: 'click'
+        });
+
+        $("#js_moreinfo").on("click", function () {
+            if ($("#txtname").val().trim().length == 0) {
+                easyDialog.open({
+                    container: {
+                        content: '名称不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if ($("#txtphone").val().trim().length == 0) {
+                easyDialog.open({
+                    container: {
+                        content: '联系方式不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            PostApplyInfo('@Url.Action("MoreInfo")');
+        })
+
+        $("#js_confirm").on("click", function () {
+            if ($("#txtname").val().trim().length == 0) {
+                easyDialog.open({
+                    container: {
+                        content: '名称不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+            if ($("#txtphone").val().trim().length == 0) {
+                easyDialog.open({
+                    container: {
+                        content: '联系方式不能为空！',
+                    },
+                    autoClose: 2000
+                });
+                return false;
+            }
+
+            jConfirm('确定提交申请', function () {
+                PostApplyInfo('@Url.Action("Successful")');
+            }, "");
+        });
+
+        function PostApplyInfo(url) {
+            var source = '@ViewBag.source';
+            var userid = '@ViewBag.userid';
+            var data = {
+                "apply_name": $("#txtname").val(),
+                "apply_phone": $("#txtphone").val(),
+                "apply_address": $("#txtaddress").val(),
+                "apply_gardenName": $("#txtgardenname").val(),
+                "apply_source": source,
+                "apply_userid": userid
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/v1/design',
+                dataType: 'json',
+                processData: false,
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#js_moreinfo").attr({ disabled: "disabled" });
+                    $("#js_confirm").attr({ disabled: "disabled" });
+                    $("#activity_pane").showLoading();
+                },
+                complete: function () {
+                    $("#activity_pane").hideLoading();
+                },
+                success: function (result) {
+                    window.location.href = url + "?applyid=" + result.data.apply_id + "&source=" + '@ViewBag.source';
+                    return false;
+                },
+                error: function (einfo) {
+                    $("#js_moreinfo").attr({ disabled: "false" });
+                    $("#js_confirm").attr({ disabled: "false" });
+                }
+            });
+
+        }
+
+    </script>
+
+
+
+</body>
+</html>

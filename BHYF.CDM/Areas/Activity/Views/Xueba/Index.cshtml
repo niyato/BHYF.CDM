@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<div class="main">
+    <img src="@Url.Content("~/Content/xueba/images/home-top.png")" alt="我是小学霸" class="picfull">
+    <a href="http://publisher.youjiaoyun.net/demonstrate/new/details/388"><img src="@Url.Content("~/Content/xueba/images/home-cont.png")" alt="我是小学霸" class="picfull"></a>
+    <div class="home-btnbox">
+        <div class="w60"><a href="@Url.Action("List", new { source = @ViewBag.source, uid = @ViewBag.uid })"><img src="@Url.Content("~/Content/xueba/images/btn-list.png")" class="home-btnbox"></a></div>
+        <div class="w40"><a href="@Url.Action("ActivityRules", new { source = @ViewBag.source, uid = @ViewBag.uid })"><img src="@Url.Content("~/Content/xueba/images/btn-activity.png")" class="home-btnbox"></a></div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+
+    function fenxiang() {
+        var source = '@ViewBag.source';
+        if (source.indexOf("android") >= 0) {
+            //安卓分享
+            JavaScriptInterface.getBannerShare("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/index", "我是小学霸-首页", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+        if (source.indexOf("ios") >= 0) {
+            //苹果分享
+            shareWebView("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/index", "我是小学霸-首页", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+    }
+
+    $(function () {
+        var uid = '@ViewBag.uid';
+        if (!uid) {
+            uid = $.cookie("ucode");
+        }
+        if (!uid || uid == 'undefined') {
+            uid = generateMixed(10);
+            $.cookie("ucode", uid, { expires: 30, path: "/" });
+        }
+        if (uid) {
+            $.ajax({
+                type: 'Get',
+                url: '/v1/superscholar?uid=' + uid,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    console.log(result);
+                    if (result.data) {
+                        var cid = result.data.id;
+                        $(".home-btnbox").prepend("<div class='w60'><a href='@Url.Action("Detail", "xueba")?id=" + cid + "&source=@ViewBag.source&uid=" + uid + "'><img src='@Url.Content("~/Content/xueba/images/btn-xixi.png")' class='home-btnbox'></a></div>");
+                    }
+                    else {
+                        $(".home-btnbox").prepend("<div class='w60'><a href='@Url.Action("Join", "xueba")?uid=" + uid + "&source=@ViewBag.source'><img src='@Url.Content("~/Content/xueba/images/btn-join.png")' class='home-btnbox'></a></div>");
+                        return false;
+                    }
+                    return false;
+                },
+                error: function (einfo) {
+                    $(".home-btnbox").prepend("<a href=' @Url.Action("Join", "xueba", new { uid = @ViewBag.uid,source=@ViewBag.source })'><img src='@Url.Content("~/Content/xueba/images/btn-join.png")' class='w60'></a>");
+                    return false;
+                }
+            });
+        }
+
+        fenxiang();
+    })
+
+    var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    function generateMixed(n) {
+        var res = "";
+        for (var i = 0; i < n ; i++) {
+            var id = Math.ceil(Math.random() * 35);
+            res += chars[id];
+        }
+        return res;
+    }
+
+</script>

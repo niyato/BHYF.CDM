@@ -1,0 +1,225 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+
+
+<div id="activity_pane">
+    <div class="rightContent">
+        <div class="rightContentBox">
+            <div class="subnav"><a href="">首页</a> > 产品申请 > 收货回执单</div>
+            <!--申请详情-->
+            <div class="bigTit mT20 mB10"><h3>收货回执单</h3></div>
+
+            <div class="detailEditBox">
+                <div class="smallTit">收货方</div>
+
+                <div class="recipientInfoBox">
+                    <div class="mR15 fl">
+                        <label class="mR10">单位名称</label>
+                        <input class="searchInput" type="text" id="ReceiveCompany" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font style="color:red;">*</font>收货地址</label>
+                        <input class="searchInput" type="text" id="ReceiveAddress" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font style="color:red;">*</font>联系人</label>
+                        <input class="searchInput" type="text" id="ReceiveName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font style="color:red;">*</font>联系方式</label>
+                        <input class="searchInput" type="text" id="ReceivePhone" />
+                    </div>
+                </div>
+
+                <div class="smallTit mB20 poR">
+                    物品清单
+                    @*<div class="addpro">
+                            <button type="button" class="addsBtn" data-toggle="modal" data-target="#addSource">新增物品</button>
+                        </div>*@
+                </div>
+
+                <table width="100%" id="tlist" border="0" cellspacing="0" class="accTabbox">
+                    <tr>
+                        <th scope="col">名称规格型号</th>
+                        <th scope="col">数量</th>
+                        <th scope="col">备注</th>
+                    </tr>
+                </table>
+
+                <div class="smallTit mT20">收货确认</div>
+                <div class="recipientInfoBox">
+                    <div class="mR15 fl">
+                        <label class="mR10"><font style="color:red;">*</font>姓名</label>
+                        <input class="searchInput" type="text" id="TakeName" />
+                    </div>
+                    <div class="mR15 fl">
+                        <label class="mR10"><font style="color:red;">*</font>联系方式</label>
+                        <input class="searchInput" type="text" id="TakePhone" />
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="mB10">上传发货单凭证：</h3>
+                    <div class="default">
+                        <div id="localImag">
+                            <img id="preview" src="@Url.Content("/Content/delivery/images/add.png")" width="100" style="display: block; width: 100px; height:100px;" class="w60">
+                            <input type="file" id="inputimg" style="width:100px;height:100px; opacity:0; position:absolute; bottom:0; ">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tC mT20 mB20">
+                    <input type="button" value="保存" class="preserveBtn">
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        var id = '@ViewBag.Id';
+        BindData(id);
+    })
+
+    //上传图片
+    $("#inputimg").change(function (data) {
+        var formData = new FormData();
+        formData.append('file', $('#inputimg')[0].files[0]);
+        var id = '@ViewBag.Id';
+        $.ajax({
+            url: '/v1/file/UploadDeliveryImg?id=' + id,
+            type: 'POST',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            $("#preview").attr("src", "/upload/delivery/" + id + "/" + res.data);
+        }).fail(function (res) { });
+    })
+
+    function BindData(id) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/' + id,//目标地址
+            beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                BindProduct(resultData.deliveryApplyProducts);
+            }
+        });
+    }
+
+    //绑定发货商品信息
+    function BindProduct(json) {
+        $.each(json, function (i, obj) {
+            $("#tlist").append("<tr>"
+                    + "<td>" + obj.productName + "</td>"
+                    + "<td>" + obj.number + "</td>"
+                    + "<td>" + obj.saleType + "</td>"
+                    + "</tr>");
+        })
+    }
+
+    //提交收货回执单
+    $(".preserveBtn").click(function (e) {
+        e.preventDefault();
+
+        if ($("#ReceiveAddress").val().trim() == "")
+        {
+            easyDialog.open({
+                container: {
+                    content: '请填写收货地址！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#ReceiveName").val().trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请填写联系人！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#ReceivePhone").val().trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请填写联系方式！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#TakeName").val().trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请填写收货确认姓名！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#TakePhone").val().trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请填写收货确认联系方式！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#inputimg").val() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请选择图片！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        var data = {
+            "ApplyId": '@ViewBag.Id',
+            "ReceiveCompany": $("#ReceiveCompany").val(),
+            "ReceiveAddress": $("#ReceiveAddress").val(),
+            "ReceiveName": $("#ReceiveName").val(),
+            "ReceivePhone": $("#ReceivePhone").val(),
+            "TakeName": $("#TakeName").val(),
+            "TakePhone": $("#TakePhone").val(),
+            "Img": $("#preview").attr("src")
+        };
+        PostForm(data);
+    })
+
+    function PostForm(data) {
+        //提交审批
+        $.ajax({
+            url: '/v1/delivery/PostDeliveryReceipt',
+            type: 'POST',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+        }).done(function (res) {
+            window.location.href = '@Url.Action("ApplyList")';
+            return false;
+        }).fail(function (res) {
+            alert("操作失败" + res);
+        });
+    }
+</script>

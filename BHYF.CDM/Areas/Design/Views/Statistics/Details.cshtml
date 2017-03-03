@@ -1,0 +1,279 @@
+﻿@{
+    Layout = "~/Areas/design/Views/Shared/_LayoutStatistics.cshtml";
+}
+
+
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<link href="@Url.Content("~/Content/allf.css")" rel="stylesheet" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.showLoading.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.bxslider.js")" type="text/javascript"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+<script src="@Url.Content("~/Scripts/option.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $(".dialog_link a").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog',  //传入id，可以控制样式
+                'dialogFx': '1',     //传入显示和隐藏的参数
+            });
+        });
+
+        $(".dialog__overlay").click(function () {
+
+            $(this).DialogShow({
+                'id': 'somedialog',
+                'dialogFx': '0',
+            });
+
+        });
+
+
+        $(".action").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog',
+                'dialogFx': '0',
+            });
+        });
+
+
+        $(".pic_link a").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog1',  //传入id，可以控制样式
+                'dialogFx': '1',     //传入显示和隐藏的参数
+            });
+        });
+
+        $(".dialog__overlay").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog1',
+                'dialogFx': '0',
+            });
+        });
+
+        $(".action").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog1',
+                'dialogFx': '0',
+            });
+        });
+    })
+    function JudgeImageIsShow(id) {
+        for (var i = 0; i < ImageUrlArr.length; i++) {
+            var item = ImageUrlArr[i].split('#');
+            if (item[0] == id) {
+                //return i;
+                return item[1];
+            }
+        }
+        return null;
+    }
+
+    $().ready(function () {
+        /*设置弹出图片层位置*/
+        $("#tblist").click(function () {
+            var node = event.srcElement;
+            switch (node.className) {
+                case "LookMore":
+                    $(this).DialogShow({
+                        'id': 'somedialog',  //传入id，可以控制样式
+                        'dialogFx': '1',     //传入显示和隐藏的参数
+                    });
+                    var str = $(node).parent().text().replace("....查看", "");
+                    $("#somedialog .text").text(str);
+                    $("#somedialog h2").text("需求描述");
+                    break;
+                case "LookImg":
+                    var id = $(node).parent().parent().children().eq(0).text();
+                    var lab = JudgeImageIsShow(id);
+                    if (lab != null) {
+                        $(".LookImg").DialogShow({
+                            'id': 'somedialog1',  //传入id，可以控制样式
+                            'dialogFx': '1',     //传入显示和隐藏的参数
+                        });
+                        $("#somedialog1 slider8").empty();
+                        $(".bx-controls-direction .bx-prev").remove();
+                        $(".bx-controls-direction .bx-next").remove();
+                        var imgarr = lab.split(',');
+                        var strurl = "";
+                        for (var i = 0; i < imgarr.length; i++) {
+                            var url = "/upload/applydesign/" + id.toString() + "/" + imgarr[i].toString();
+                            strurl += " <div class='slide'><img src= '" + url + "'/></div>";
+                        }
+                        $("#somedialog1 .slider8").append(strurl);
+                        $(".slider8 img").css({ "height": "280px", "width": "560px" });
+
+                        $('.slider8').bxSlider({
+                            slideWidth: 600,
+                            adaptiveHeight: true,
+                            startSlides: 0,
+                            slideMargin: 10
+                        });
+                        $(".tool").children().eq(1).click(function () {
+                            TransformImg();
+                            return false;
+                        });
+                    }
+                    else {
+                        $(this).DialogShow({
+                            'id': 'somedialog',  //传入id，可以控制样式
+                            'dialogFx': '1',     //传入显示和隐藏的参数
+                        });
+                        $("#somedialog h2").text("提示");
+                        $("#somedialog .text").text("该园没有上传图片信息");
+                    }
+                    break;
+                default:
+            }
+        });
+    });
+</script>
+
+
+<h3>活动报名人数统计</h3>
+
+<table width="100%" border="0" cellspacing="0" class="listbox" id="tblist">
+    <thead>
+    <th scope="col">报名ID</th>
+    <th scope="col">报名人</th>
+    <th scope="col">创建时间</th>
+    <th scope="col">园所位置</th>
+    <th scope="col">园所名称</th>
+    <th scope="col">联系方式</th>
+    <th scope="col">园所性质</th>
+    <th scope="col">预算金额</th>
+    <th scope="col">主题风格</th>
+    <th scope="col">安装位置</th>
+    <th scope="col">预计安装时间</th>
+    <th scope="col">需求描述</th>
+    <th scope="col">上传图片</th>
+    </thead>
+    <tbody></tbody>
+</table>
+<div id="divpage" class="flickr" style="margin-top:20px;margin-bottom:20px;"></div>
+
+<div id="somedialog" class="dialog">
+    <div class="dialog__overlay"></div>
+    <div class="dialog__content">
+        <img src="@Url.Content("~/Content/images/close.png")" class="action" />
+        <h2>需求描述</h2>
+        <p class="text"></p>
+    </div>
+</div>
+
+
+<div id="somedialog1" class="dialog">
+    <div class="dialog__overlay"></div>
+    <div class="dialog__content">
+        <img src="@Url.Content("~/Content/images/close.png")" class="action" />
+        <h2>图片详情</h2>
+        <div class="slider8">
+        </div>
+        <div class="tool"><a href="">旋转</a></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var ImageUrlArr = [];
+    function GettdByItem(node) {
+        if (typeof (node) == "undefined" || node == "null")
+            return "<td></td>";
+        else
+            return "<td>" + node + "</td>";
+    }
+    function SplitChar(node) {
+        if (typeof (node) == "undefined" || node == "null")
+            return "<td></td>"
+        else
+            if (node.length >= 20)
+                return "<td>" + node.substr(0, 20) + "<span>....</span>" + "<a href='#' class='LookMore'>查看</a><span style='display:none'>" + node.substr(20) + "</span></td>";
+            else
+                return "<td>" + node + "</td>";
+    }
+    function SaveImageUrl(node) {
+        if (node == null)
+            return;
+        else {
+            var key = node["apply_id"];
+            //初始化图片
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: '/v1/file/GetFiles?id=' + key,
+                success: function (result) {
+                    if (result.data) {
+                        ImageUrlArr.push(key + "#" + result.data);
+                    }
+                }
+            })
+        }
+
+    }
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+    $(function () {
+        initData(0);
+    });
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0)
+            initData(page_id);
+    }
+    function initData(pageindx) {
+        var tbody = "";
+        var pageCount = "";
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: '/v1/design',//目标地址
+            async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+            data: "page=" + (pageindx + 1) + "&limit=" + pageSize,
+            //beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            //complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                var resultData = json.data;
+                pageCount = json.total;
+                if (resultData == "") {
+                    $("#divload").hide();
+                    return false;
+                }
+                $("#tblist tbody").empty();
+                $.each(resultData, function () {
+                    var str = "<tr>" + GettdByItem(this["apply_id"]) + GettdByItem(this["apply_name"]) +
+                        "<td>" + (this["apply_createTime"] ? moment(this["apply_createTime]"]).format('YYYY-MM-DD HH:mm') : '') + "</td>"
+                       + GettdByItem(this["apply_address"]) + GettdByItem(this["apply_gardenName"])
+                    + GettdByItem(this["apply_phone"]) + GettdByItem(this["apply_nature"]) + GettdByItem(this["apply_budget"]) + GettdByItem(this["apply_style"]) +
+                    GettdByItem(this["apply_area"]) + GettdByItem(this["apply_time"]);
+                    str = str + SplitChar(this["apply_content"]) + "<td><a href='#' class='LookImg'>查看</a></td></tr>";
+                    $("#tblist").append(str);
+                    SaveImageUrl(this);
+                });
+                if (pageCount != 0) {
+                    $("#divpage").pagination(pageCount, {
+                        callback: pageselectCallback,
+                        prev_text: '<< 上一页',
+                        next_text: '下一页 >>',
+                        items_per_page: 10,
+                        num_display_entries: 6,
+                        current_page: pageindx,
+                        num_edge_entries: 2
+                    });
+                }
+            }
+        });
+    }
+    var dushu = 0;
+    function TransformImg() {
+        dushu = dushu + 90;
+        $(".slider8 img").css({
+            "transform": "rotate(" + dushu + "deg)", "-ms-transform": "rotate(" + dushu + "deg)", /* Internet Explorer */
+            "-moz-transform": "rotate(" + dushu + "deg)", /* Firefox */
+            "-webkit-transform": "rotate(" + dushu + "deg)", /* Safari 和 Chrome */
+            "-o-transform": "rotate(" + dushu + "deg)" /* Opera */
+        });
+    }
+</script>

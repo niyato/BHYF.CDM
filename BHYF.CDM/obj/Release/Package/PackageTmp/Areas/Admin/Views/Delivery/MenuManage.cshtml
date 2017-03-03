@@ -1,0 +1,179 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+
+
+
+<div class="rightContent">
+    <div class="rightContentBox">
+        <div class="subnav"><a href="">首页</a> > 菜单权限 </div>
+        <!--申请详情-->
+
+
+        <div style=" width:100%; display:inline-block; margin-top:20px;">
+            <div class="fr">
+                <button type="button" class="addsBtn" data-toggle="modal" data-target="#addSource">添加菜单权限</button>
+            </div>
+        </div>
+
+
+        <div class="applicationbox">
+            <table width="100%" border="0" cellspacing="0" class="accTabbox" id="tlist">
+                <tr>
+                    <th scope="col">菜单名称</th>
+                    <th scope="col">菜单编码</th>
+                    <th scope="col">菜单描述</th>
+                    <th scope="col">用户组</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </table>
+
+
+        </div>
+
+    </div>
+</div>
+
+
+<!--弹出窗口 添加资源-->
+<div class="modal fade" id="addSource" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">添加菜单权限</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form class="form-horizontal">
+                        <div class="form-group ">
+                            <label for="seltype" class="col-xs-3 control-label">菜单名称：</label>
+                            @Html.DropDownList("deliverymenutype", null, "请选择", new { @id = "seltype" })
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="selrole" class="col-xs-3 control-label">角色名称：</label>
+                            <select id="selrole">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group ">
+                            <label for="sName" class="col-xs-3 control-label">菜单权限说明：</label>
+                            <div class="col-xs-8 ">
+                                <input type="text" class="form-control input-sm duiqi" id="txtdesc" placeholder="">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnsubmit" type="button" class="preserveBtn" data-dismiss="modal">保存</button>
+                <button id="btncancel" type="button" class="preserveBtn">取消</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        BindRole();
+
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: '/v1/delivery/GetDeliveryMenuList',
+            //beforeSend: function () { $("#activity_pane").showLoading(); },
+            //complete: function () { $("#activity_pane").hideLoading(); },
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                $.each(resultData, function (v, obj) {
+                    $("#tlist").append("<tr>"
+                        + "<td>" + obj.menuName + "</td>"
+                         + "<td>" + obj.menuCode + "</td>"
+                          + "<td>" + obj.menuDesc + "</td>"
+                           + "<td>" + obj.groupName + "</td>"
+                           + "<td><a href='#' onclick='DelMenu(" + obj.id + ")'>删除</a></td>"
+                        + "</tr>");
+                })
+            }
+        });
+    })
+
+    //绑定角色下拉列表
+    function BindRole() {
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: '/v1/delivery/GetManageGroupList',
+            //beforeSend: function () { $("#activity_pane").showLoading(); },
+            //complete: function () { $("#activity_pane").hideLoading(); },
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                $.each(resultData, function (v, obj) {
+                    $("#selrole").append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+                })
+            }
+        });
+    }
+
+    //删除菜单权限
+    function DelMenu(id) {
+        if (confirm("确定要删除吗？")) {
+            $.ajax({
+                url: '/v1/delivery/DeleteDeliveryMenu?id=' + id,
+                type: 'delete',
+            }).done(function (res) {
+                alert('删除成功');
+                window.location.reload();
+            }).fail(function (res) { });
+        }
+    }
+
+    //确认添加
+    $("#btnsubmit").click(function () {
+        var seltype = $("#seltype").val();
+        var seltypname = $("#seltype option:selected").text();
+        var selrole = $("#selrole").val();
+        var selrolename = $("#selrole option:selected").text();
+        if (seltype == "" || selrole == "") {
+            easyDialog.open({
+                container: {
+                    content: '请选择菜单名称和角色名称！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+        var data = {
+            "Mgroupid": selrole,
+            "MenuName": seltypname,
+            "MenuCode": seltype,
+            "MenuUrl": seltype,
+            "MenuDesc": $("#txtdesc").val(),
+            "GroupName": selrolename
+        }
+
+        $.ajax({
+            url: '/v1/delivery/CreateDeliveryMenu',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+        }).done(function (res) {
+            alert("添加成功");
+            $('#addSource').modal('hide');
+            window.location.reload();
+        }).fail(function (res) { });
+
+    })
+
+    //取消添加
+    $("#btncancel").click(function () {
+        $('#addSource').modal('hide');
+    })
+
+</script>

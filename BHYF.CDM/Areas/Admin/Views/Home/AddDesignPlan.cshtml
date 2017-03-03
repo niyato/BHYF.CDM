@@ -1,0 +1,100 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/zyupload/zyupload-1.0.0.min.css")">
+<script type="text/javascript" src="@Url.Content("~/Content/zyupload/zyupload.basic-1.0.0.js")"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#js_confirm").on("click", function () {
+            $(".upload_btn").click();
+        });
+    })
+
+    function BeginPostForm(filepath, filename) {
+        var data = {
+            "ApplyId": '@ViewBag.applyid',
+            "DesignDesc": $("#infile").val(),
+            "DesignFilePath": filepath,
+            "DesignFileName": filename,
+            "CreaterName": '@User.Identity.Name'
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/v1/design/PostDesignPlan',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                alert('添加成功');
+                window.location.href = '@Url.Action("DesignPlan", new { applyid = @ViewBag.applyid })';
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+</script>
+
+<div class="col-sm-12">
+    <form id="form1" class="form-horizontal well">
+        <div class="form-group">
+            <label>摘要说明</label>
+            <textarea id="infile" placeholder="" class="form-control" cols="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>文件摘要<font color="red">(上传格式:zip,rar)</font></label>
+            <div id="zyupload" class="zyupload"></div>
+            <script type="text/javascript">
+                $(function () {
+                    var aid = '@ViewBag.applyid';
+                    // 初始化插件
+                    $("#zyupload").zyUpload({
+                        width: "100%",                 // 宽度
+                        height: "auto",                 // 宽度
+                        itemWidth: "140px",                 // 文件项的宽度
+                        itemHeight: "140px",                 // 文件项的高度
+                        url: '/v1/file/upload?aid=' + aid + "&filetype=file", //上传的地址
+                        fileType: ["zip","rar"],// 上传文件的类型
+                        multiple: false,                    // 是否可以多个文件上传
+                        dragDrop: false,                   // 是否可以拖动上传文件
+                        tailor: false,                   // 是否可以裁剪图片
+                        del: true,                    // 是否可以删除文件
+                        finishDel: false,  				  // 是否在上传文件完成后删除预览
+                        /* 外部获得的回调接口 */
+                        onSelect: function (selectFiles, allFiles) {    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                            console.info("当前选择了以下文件：");
+                            console.info(selectFiles);
+                        },
+                        onDelete: function (file, files) {              // 删除一个文件的回调方法 file:当前删除的文件  files:删除之后的文件
+                            console.info("当前删除了此文件：");
+                            console.info(file.name);
+                        },
+                        onSuccess: function (file, response) {          // 文件上传成功的回调方法
+                            console.info("此文件上传成功：");
+                            console.info(file.name);
+                            console.info("此文件上传到服务器地址：");
+                            console.info(response);
+                            BeginPostForm(response, file.name);
+                        },
+                        onFailure: function (file, response) {          // 文件上传失败的回调方法
+                            console.info("此文件上传失败：");
+                            console.info(file.name);
+                        },
+                        onComplete: function (response) {           	  // 上传完成的回调方法
+                            console.info("文件上传完成");
+                            console.info(response);
+                        }
+                    });
+
+                });
+            </script>
+        </div>
+        <div class="btn-toolbar list-toolbar">
+            <button class="btn btn-primary" type="button" id="js_confirm"><i class="fa fa-save"></i> 保存</button>
+            @Html.ActionLink("返回", "DesignPlan", new { applyid = @ViewBag.applyid }, new { @class = "btn btn-primary" })
+        </div>
+    </form>
+</div>

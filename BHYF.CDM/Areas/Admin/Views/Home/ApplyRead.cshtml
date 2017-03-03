@@ -1,0 +1,268 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-sm-12">
+    <div class="header">
+        <h1 class="page-title">设计需求</h1>
+        <p class="center-block" id="btndesign"></p>
+    </div>
+    <fieldset>
+        <legend>基础信息</legend>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">幼儿园地址:</label><span id="address" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">幼儿园名称:</label><span id="gname" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">负责老师姓名</label><span id="tname" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">负责老师电话</label><span id="tmobile" class="label label-info"></span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>更多完善资料</legend>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">园所性质</label><span id="nature" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">预算金额</label><span id="budget" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">环创区域</label><span id="area" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">主题风格</label><span id="style" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">预计安装时间</label><span id="time" class="label label-info"></span>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 text-right">需求描述</label><span id="apply_content" class="label label-info"></span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>图片信息</legend>
+        <div id="divimgs"></div>
+    </fieldset>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">需求审核</h3>
+            </div>
+            <form id="formfade" class="form-horizontal">
+                <div class="modal-body">
+
+                    <div class="form-group" style="margin-left:10px;">
+                        <label>审核结果</label>
+                        @Html.DropDownList("applyenumlist", null, "请选择", new { id = "result" })
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label>优先级</label>
+                        @Html.DropDownList("applyenumlevel", null, "请选择", new { id = "sellevel" })
+                    </div>
+                    <div class="form-group" style="margin-left:10px;display:none;" id="divmanager">
+                        <label>指派跟踪人员</label>
+                        <select id="selmanager"></select>
+                    </div>
+                    <div class="form-group" style="margin-left:10px;">
+                        <label>备注</label>
+                        <textarea id="txtbackup" rows="3" maxlength="200" class="form-control" placeholder="备注信息"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    <button class="btn btn-danger" data-dismiss="modal" id="btnPost">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="descmodel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">方案说明</h3>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-left:10px;">
+                        <label>预计完成时间</label>
+                        <input type="text" id="txttime" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    <button class="btn btn-danger" data-dismiss="modal" id="submitPost">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var comeform = "";
+    $(function () {
+        var id = '@ViewBag.ID';
+
+        BindDatas(id);
+
+        $("#btnPost").click(function () {
+            AuditindApply();
+        })
+
+        $("#submitPost").click(function () {
+            GetApplyInfo();
+        })
+
+        $("#result").change(function () {
+            //如果审批状态为待确认而且申请设计来源来自不是来自后台
+            if ($("#result").val() == "WaitConfirm" && comeform != "后台") {
+            
+                //获取外服用户组
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: '/v1/manager/GetApplyDesignManager',
+                    success: function (result) {
+                        var json = result.data;
+                        showmanager(json.mgroupid);
+                    }
+                });
+            }
+            else {
+                $("#divmanager").hide();
+            }
+        })
+
+    });
+
+    function showmanager(mgroupid) {
+        $("#divmanager").show();
+        $.ajax({
+            type: 'get',
+            url: '/v1/manager/GetPersonInfos?mgroupid=' + mgroupid,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                console.log(result.data);
+                $("#selmanager").empty();
+                $("#selmanager").append("<option value=''>请选择</option>");
+                $.each(result.data, function (i, obj) {
+                    $("#selmanager").append("<option value='" + obj.memberid + "'>" + obj.name + "</option>");
+                })
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+
+    function BindDatas(id) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/design/' + id,
+            success: function (result) {
+                var json = result.data;
+                //来源
+                comeform = json.apply_source;
+                //基本资料
+                $("#address").html(json.apply_address ? json.apply_address : "</br>");
+                $("#gname").html(json.apply_gardenName ? json.apply_gardenName : "</br>");
+                $("#tname").html(json.apply_name);
+                $("#tmobile").html(json.apply_phone);
+                //完善资料
+                $("#nature").html(json.apply_nature ? json.apply_nature : "</br>");
+                $("#budget").html(json.apply_budget ? json.apply_budget : "</br>");
+                $("#area").html(json.apply_area ? json.apply_area : '</br>');
+                $("#style").html(json.apply_style ? json.apply_style : '</br>');
+                $("#time").html(json.apply_time ? json.apply_time : '</br>');
+                $("#apply_content").html(json.apply_content ? json.apply_content : '</br>');
+                //上传的图片
+                GetImgs(id);
+                //审批按钮
+                if (!json.apply_status || json.apply_status == "WaitAuditing")
+                    $("#btndesign").append("<a class='btn-primary' href='#myModal' role='button' data-toggle='modal'>审批</a>");
+                if (json.apply_status == "Auditing")
+                    $("#btndesign").append("<a class='btn-primary' href='#descmodel' role='button' data-toggle='modal'>需求确认</a>");
+
+                $("#btndesign").append("<a href='javascript:history.back()' class='btn-block'>返回</a>");
+            }
+        })
+    }
+
+    function GetImgs(id) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/file/GetFiles?id=' + id,
+            success: function (result) {
+                if (result.data) {
+                    var array = result.data.split(",");
+                    for (var i = 0 ; i < array.length ; i++) {
+                        $("#divimgs").append("<img class='img-responsive' src='/upload/applydesign/" + id + "/" + array[i] + "' />");
+                    }
+                }
+            }
+        })
+    }
+
+    //提交审核表单
+    function AuditindApply() {
+        var data = {
+            "apply_id": parseInt('@ViewBag.ID'),
+            "review_level": $("#sellevel").val(),
+            "apply_status": $("#result").val(),
+            "review_manager": $("#selmanager").val(),
+            "review_content": $("#txtbackup").val()
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/v1/design/PostDesignApplyReview',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                alert('审核成功');
+                window.location.href = '@Url.Action("ApplyAuditing")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+
+    function GetApplyInfo() {
+        var data = {
+            "apply_plantime": $("#txttime").val(),
+            "apply_id": '@ViewBag.ID'
+        }
+        $.ajax({
+            type: 'PUT',
+            url: '/v1/design/ConfirmDesignApply',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                alert('需求确认成功');
+                window.location.href = '@Url.Action("DesignApply")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+</script>

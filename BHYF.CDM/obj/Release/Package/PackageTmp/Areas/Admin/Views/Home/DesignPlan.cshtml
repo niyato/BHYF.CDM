@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(function () {
+        var applyid = '@ViewBag.applyid';
+        if (applyid > 0) {
+            BindHtml(applyid);
+            $.ajax({
+                type: 'get',
+                url: '/v1/design/GetDesignPlan?applyid=' + applyid,
+                dataType: 'json',
+                processData: false,
+                contentType: "application/json; charset=utf-8",
+                beforeSend: function () {
+                },
+                complete: function () {
+                    // $("#activity_pane").hideLoading();
+                },
+                success: function (result) {
+                    var resultData = result.data;
+                    console.log(resultData);
+                    $.each(resultData, function (i, obj) {
+                        $(".table tbody").append("<tr>" +
+                            "<td>" + obj.designPlanId + "</td>" +
+                            "<td><a href='/upload/designplan/" + obj.applyId + "/" + obj.designFilePath + "' target=_blank>" + obj.designFileName + "</a></td>" +
+                            "<td>" + (obj.createTime ? moment(obj.createTime).format('YYYY-MM-DD') : '') + "</td>" +
+                            "<td>" + (obj.createrName ? obj.createrName : '') + "</td>" +
+                            "<td>" + (obj.designDesc ? obj.designDesc : '') + "</td>" +
+                            //"<td></td>" +
+                            "</tr>");
+                    });
+                }
+            });
+        }
+    })
+
+    function BindHtml(applyid) {
+        var memeberid = '@ViewBag.Memberid';
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/manager/GetApplyDesignManager',
+            success: function (result) {
+                var json = result.data;
+                if (json.designmanager && json.designmanager == memeberid) {
+                    $("#div1").append("<a href='@Url.Action("AddDesignPlan")?applyid=" + applyid + "'>新方案</a>");
+                }
+            }
+        })
+    }
+</script>
+
+<div class="col-sm-12">
+    <form class="form-horizontal well">
+        <div class="form-group" id="div1">
+
+        </div>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>方案名称</th>
+            <th>提交时间</th>
+            <th>提交人</th>
+            <th>变动</th>
+            @*<th>操作</th>*@
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+

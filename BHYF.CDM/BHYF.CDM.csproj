@@ -1,0 +1,508 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1CE45897-CCC3-468E-8DCD-ABEE5218CAA5}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BHYF.CDM</RootNamespace>
+    <AssemblyName>BHYF.CDM</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.4.2.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.1\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\Activity\Models\" />
+    <Folder Include="Areas\Design\Models\" />
+    <Folder Include="Content\Scripts\" />
+    <Folder Include="Views\Delivery\" />
+    <Folder Include="Views\File\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\MapperConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Activity\ActivityAreaRegistration.cs" />
+    <Compile Include="Areas\Activity\Controllers\XuebaController.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\BaseController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CheckLogin.cs" />
+    <Compile Include="Areas\Admin\Controllers\DeliveryController.cs" />
+    <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ManageController.cs" />
+    <Compile Include="Areas\Admin\Models\LoginModel.cs" />
+    <Compile Include="Areas\Design\Controllers\ApplyController.cs" />
+    <Compile Include="Areas\Design\Controllers\StatisticsController.cs" />
+    <Compile Include="Areas\Design\DesignAreaRegistration.cs" />
+    <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
+    <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
+    <Compile Include="Areas\HelpPage\Controllers\HelpController.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageAreaRegistration.cs" />
+    <Compile Include="Areas\HelpPage\HelpPageConfigurationExtensions.cs" />
+    <Compile Include="Areas\HelpPage\Models\HelpPageApiModel.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleKey.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ImageSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\InvalidSample.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
+    <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
+    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\DeliveryController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\DesignController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
+    <Compile Include="Controllers\SignUpController.cs" />
+    <Compile Include="Controllers\SuperScholarController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ActivityModel.cs" />
+    <Compile Include="Models\ActivityNumModel.cs" />
+    <Compile Include="Models\ActivitySuperScholar.cs" />
+    <Compile Include="Models\DeliveryApply.cs" />
+    <Compile Include="Models\DeliveryApplyDto.cs" />
+    <Compile Include="Models\DeliveryInvoice.cs" />
+    <Compile Include="Models\DeliveryMenu.cs" />
+    <Compile Include="Models\DeliveryProduct.cs" />
+    <Compile Include="Models\DeliveryReceipt.cs" />
+    <Compile Include="Models\DesignApply.cs" />
+    <Compile Include="Models\DesignApplyDto.cs" />
+    <Compile Include="Models\DesignEvent.cs" />
+    <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\Manager.cs" />
+    <Compile Include="Models\PersonInfo.cs" />
+    <Compile Include="Models\YwtDbContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="Content\allf.css" />
+    <Content Include="Content\bootstrap-fileinput\css\fileinput.css" />
+    <Content Include="Content\bootstrap-fileinput\css\fileinput.min.css" />
+    <Content Include="Content\bootstrap-fileinput\img\loading-sm.gif" />
+    <Content Include="Content\bootstrap-fileinput\img\loading.gif" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\delivery\css\bootstrap.min.css" />
+    <Content Include="Content\delivery\css\easydropdown.css" />
+    <Content Include="Content\delivery\css\lhgcalendar.css" />
+    <Content Include="Content\delivery\css\style.css" />
+    <Content Include="Content\delivery\images\add.png" />
+    <Content Include="Content\delivery\images\lhgcal_bg.gif" />
+    <Content Include="Content\delivery\images\lhgcal_month.gif" />
+    <Content Include="Content\delivery\images\lhgcal_year.gif" />
+    <Content Include="Content\dialog.css" />
+    <Content Include="Content\editor.css" />
+    <Content Include="Content\images\add.png" />
+    <Content Include="Content\images\btn_search.png" />
+    <Content Include="Content\images\bx_loader.gif" />
+    <Content Include="Content\images\checkbox_icon.png" />
+    <Content Include="Content\images\controls.png" />
+    <Content Include="Content\images\FooBar4.png" />
+    <Content Include="Content\images\left.png" />
+    <Content Include="Content\images\lhgcal_bg.gif" />
+    <Content Include="Content\images\lhgcal_month.gif" />
+    <Content Include="Content\images\lhgcal_year.gif" />
+    <Content Include="Content\images\pic-01.png" />
+    <Content Include="Content\images\pic-02.png" />
+    <Content Include="Content\images\pic-03.png" />
+    <Content Include="Content\images\right.png" />
+    <Content Include="Content\images\updatebtn.png" />
+    <Content Include="Content\LArea.css" />
+    <Content Include="Content\lhgcalendar.css" />
+    <Content Include="Content\mobile-select-area.css" />
+    <Content Include="Content\pagination.css" />
+    <Content Include="Content\skins\images\add_img.png" />
+    <Content Include="Content\skins\images\bg.png" />
+    <Content Include="Content\skins\images\close.png" />
+    <Content Include="Content\skins\images\del.png" />
+    <Content Include="Content\skins\images\delete_blue.png" />
+    <Content Include="Content\skins\images\delete_white.png" />
+    <Content Include="Content\skins\images\edit.png" />
+    <Content Include="Content\skins\images\edit_blue.png" />
+    <Content Include="Content\skins\images\edit_white.png" />
+    <Content Include="Content\skins\images\fileType\file.png" />
+    <Content Include="Content\skins\images\fileType\pdf.png" />
+    <Content Include="Content\skins\images\fileType\ppt.png" />
+    <Content Include="Content\skins\images\fileType\psd.png" />
+    <Content Include="Content\skins\images\fileType\rar.png" />
+    <Content Include="Content\skins\images\fileType\swf.png" />
+    <Content Include="Content\skins\images\fileType\ttf.png" />
+    <Content Include="Content\skins\images\fileType\txt.png" />
+    <Content Include="Content\skins\images\fileType\xls.png" />
+    <Content Include="Content\skins\images\fileType\zip.png" />
+    <Content Include="Content\skins\images\finish.png" />
+    <Content Include="Content\skins\images\Jcrop.gif" />
+    <Content Include="Content\skins\images\loading.gif" />
+    <Content Include="Content\skins\images\success.png" />
+    <Content Include="Content\skins\zyupload-1.0.0.css" />
+    <Content Include="Content\skins\zyupload-1.0.0.min.css" />
+    <Content Include="Content\style.css" />
+    <Content Include="Content\theme.css" />
+    <Content Include="Content\images\add_img.png" />
+    <Content Include="Content\images\bg.png" />
+    <Content Include="Content\images\close.png" />
+    <Content Include="Content\images\del.png" />
+    <Content Include="Content\images\delete_blue.png" />
+    <Content Include="Content\images\delete_white.png" />
+    <Content Include="Content\images\edit.png" />
+    <Content Include="Content\images\edit_blue.png" />
+    <Content Include="Content\images\edit_white.png" />
+    <Content Include="Content\images\finish.png" />
+    <Content Include="Content\images\Jcrop.gif" />
+    <Content Include="Content\images\loading.gif" />
+    <Content Include="Content\images\success.png" />
+    <Content Include="Content\xueba\css\LArea.css" />
+    <Content Include="Content\xueba\css\style.css" />
+    <Content Include="Content\xueba\images\activity.png" />
+    <Content Include="Content\xueba\images\arrow.png" />
+    <Content Include="Content\xueba\images\basketful.png" />
+    <Content Include="Content\xueba\images\big-full-star.png" />
+    <Content Include="Content\xueba\images\big-img.png" />
+    <Content Include="Content\xueba\images\big-liked.png" />
+    <Content Include="Content\xueba\images\big-star.png" />
+    <Content Include="Content\xueba\images\btn-activity.png" />
+    <Content Include="Content\xueba\images\btn-join.png" />
+    <Content Include="Content\xueba\images\btn-list.png" />
+    <Content Include="Content\xueba\images\btn-xixi.png" />
+    <Content Include="Content\xueba\images\canvass.png" />
+    <Content Include="Content\xueba\images\close.gif" />
+    <Content Include="Content\xueba\images\confirm.png" />
+    <Content Include="Content\xueba\images\default-pic.png" />
+    <Content Include="Content\xueba\images\experience.png" />
+    <Content Include="Content\xueba\images\home-bg.png" />
+    <Content Include="Content\xueba\images\home-cont.png" />
+    <Content Include="Content\xueba\images\home-top.png" />
+    <Content Include="Content\xueba\images\imgbg.png" />
+    <Content Include="Content\xueba\images\list-bg.png" />
+    <Content Include="Content\xueba\images\prompt-star.png" />
+    <Content Include="Content\xueba\images\search.png" />
+    <Content Include="Content\xueba\images\small-full-star.png" />
+    <Content Include="Content\xueba\images\small-img.png" />
+    <Content Include="Content\xueba\images\small-liked.png" />
+    <Content Include="Content\xueba\images\small-star.png" />
+    <Content Include="Content\xueba\images\sub-info.png" />
+    <Content Include="Content\xueba\images\submit.png" />
+    <Content Include="Content\xueba\images\write.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\file.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\pdf.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\ppt.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\psd.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\rar.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\swf.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\ttf.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\txt.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\xls.png" />
+    <Content Include="Content\zyupload\skins\images\fileType\zip.png" />
+    <Content Include="Content\zyupload\zyupload-1.0.0.min.css" />
+    <Content Include="Content\zyupload\zyupload.basic-1.0.0.js" />
+    <Content Include="Content\zyupload\zyupload.basic-1.0.0.min.js" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Areas\HelpPage\Views\Web.config" />
+    <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TextSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Samples.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Parameters.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\InvalidSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ImageSample.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
+    <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\Manage\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\EditDemand.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Demands.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\Admin\Views\Home\ApplyAuditing.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\ApplyRead.cshtml" />
+    <Content Include="Areas\Design\Views\web.config" />
+    <Content Include="Areas\Design\Views\Apply\MoreInfo.cshtml" />
+    <Content Include="Areas\Design\Views\Statistics\Hot.cshtml" />
+    <Content Include="Areas\Design\Views\Statistics\Details.cshtml" />
+    <Content Include="Areas\Design\Views\Apply\MyDemand.cshtml" />
+    <Content Include="Areas\Design\Views\Apply\Successful.cshtml" />
+    <Content Include="Areas\Design\Views\Apply\ApplyInfo.cshtml" />
+    <Content Include="Areas\Design\Views\Apply\Index.cshtml" />
+    <Content Include="Areas\Design\Views\Shared\_LayoutStatistics.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\DesignApply.cshtml" />
+    <Content Include="Areas\Design\Views\Statistics\Acivity.cshtml" />
+    <Content Include="Areas\Design\Views\Statistics\SignUp.cshtml" />
+    <Content Include="Areas\Design\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\AddDesignPlan.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\DesignPlan.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\AssignMe.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\DesignReview.cshtml" />
+    <Content Include="Areas\Activity\Views\web.config" />
+    <Content Include="Areas\Activity\Views\Shared\_LayoutXueba.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\Index.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\ActivityRules.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\Join.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\Detail.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\List.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\Address.cshtml" />
+    <Content Include="Areas\Activity\Views\Xueba\Editadd.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_LayoutDelivery.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\CreateApply.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\ApplyList.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\ApplyDetail.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\ProductManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\Pending.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\Invoice.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\Receipt.cshtml" />
+    <Content Include="Areas\Admin\Views\Manage\DeliveryLogin.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\ApplyListManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\MenuManage.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\WaitAudit.cshtml" />
+    <Content Include="Areas\Admin\Views\Delivery\PowerManage.cshtml" />
+    <None Include="Properties\PublishProfiles\web.config.pubxml" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Image\left.png" />
+    <Content Include="Image\right.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\checkbox.js" />
+    <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\dialog.js" />
+    <Content Include="Scripts\easydialog.min.js" />
+    <Content Include="Scripts\editor.js" />
+    <Content Include="Scripts\fileinput.js" />
+    <Content Include="Scripts\fileinput.min.js" />
+    <Content Include="Scripts\fileinput_locale_zh.js" />
+    <Content Include="Scripts\jaliswall.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\jquery.bxslider.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery.dialog.js" />
+    <Content Include="Scripts\jquery.easydropdown.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\jquery.lazyload.min.js" />
+    <Content Include="Scripts\jquery.pagination.js" />
+    <Content Include="Scripts\jquery.pikachoose.js" />
+    <Content Include="Scripts\jquery.showLoading.min.js" />
+    <Content Include="Scripts\json\CityJson.js" />
+    <Content Include="Scripts\json\DistrictJson.js" />
+    <Content Include="Scripts\json\ProJson.js" />
+    <Content Include="Scripts\labelauty.js" />
+    <Content Include="Scripts\LAreaData1.js" />
+    <Content Include="Scripts\lhgcalendar.min.js" />
+    <Content Include="Scripts\lhgcore.min.js" />
+    <Content Include="Scripts\mobile-select-area.js" />
+    <Content Include="Scripts\mobiscroll.2.13.2.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\option.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="upload\applydesign\30\12ce2e61-2068-43b4-ba4c-92db3ef7b848.png" />
+    <Content Include="upload\applydesign\30\16da2679-e492-444e-8551-6804f00e7060.png" />
+    <Content Include="upload\applydesign\30\1f7b75a1-32be-4e3c-bb74-0ce7e957e075.png" />
+    <Content Include="upload\applydesign\30\b01370c7-82b2-4323-9d2d-8a32c59b808f.png" />
+    <Content Include="upload\applydesign\30\b2b7dc64-7791-4421-af81-5070877ba492.png" />
+    <Content Include="upload\PersonImage\1000.jpg" />
+    <Content Include="upload\PersonImage\1001.jpg" />
+    <Content Include="upload\PersonImage\1002.jpg" />
+    <Content Include="upload\PersonImage\1003.jpg" />
+    <Content Include="upload\PersonImage\1004.jpg" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CDM.Infrastructure\CDM.Infrastructure.csproj">
+      <Project>{3bfc4d91-56bc-471c-881e-5bf240ded4bb}</Project>
+      <Name>CDM.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>63446</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/BHYF.CDM</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

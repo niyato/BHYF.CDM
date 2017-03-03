@@ -1,0 +1,206 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/zyupload/zyupload-1.0.0.min.css")">
+<script type="text/javascript" src="@Url.Content("~/Content/zyupload/zyupload.basic-1.0.0.js")"></script>
+
+<div class="row" id="activity_pane">
+    <div class="editBox">
+        <h3>上传资料</h3>
+        <form name="form1" id="form1" enctype="multipart/form-data">
+            <div class="default">
+                <div id="localImag">
+                    <div class="localImag">
+                        <input type="hidden" id="hidimg" />
+                        <img id="preview" src="@Url.Content("/Content/xueba/images/default-pic.png")"><i></i>
+                    </div>
+                </div>
+                <h4 class="tc h20 grey">请上传横向照片</h4>
+            </div>
+
+
+            <div class="editregion">
+                <input type="hidden" id="hidimg" />
+                <div>
+                    <span class="tit">宝贝昵称</span>
+                    <p><span class="text"><input type="text" id="txtname" autofocus required placeholder="请输入宝贝昵称" maxlength="20" class="editinput"></span></p>
+                </div>
+                <div>
+                    <span class="tit">宝贝年龄</span>
+                    <p>
+                        <span class="text">
+                            <select id="txtage" class="editinput" style="border: none; font-family:'Microsoft YaHei'">
+                                <option value="">请选择宝贝年龄</option>
+                                <option value="1">1岁</option>
+                                <option value="2">2岁</option>
+                                <option value="3">3岁</option>
+                                <option value="4">4岁</option>
+                                <option value="5">5岁</option>
+                                <option value="6">6岁</option>
+                                <option value="7">7岁</option>
+                                <option value="8">8岁</option>
+                                <option value="9">9岁</option>
+                                <option value="10">10岁</option>
+                                <option value="11">11岁</option>
+                                <option value="12">12岁</option>
+                            </select>
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <span class="tit">描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述</span>
+                    <p><span class="text"><input type="text" id="txtdesc" placeholder="在这一刻记录孩子的用功与努力" maxlength="200" class="editinput"></span></p>
+                </div>
+            </div>
+            <div class="dialog_link">
+                <a href="#" onclick="BtnSubmit()"><img src="@Url.Content("~/Content/xueba/images/submit.png")" class="w60"></a>
+            </div>
+        </form>
+
+    </div>
+    <div style="height:60px;width:100%;display:block;"></div>
+    <div class="backHome"><a href="@Url.Action("index", new { uid = @ViewBag.uid, source = @ViewBag.source })" class="roseo">返回首页</a></div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var source = '@ViewBag.source';
+        if (source.indexOf("android") >= 0) {
+            $("#localImag").append("<a href='javascript:void(0)' onclick='showAndroidToast()'><img src='@Url.Content("~/Content/xueba/images/default-pic.png")' style='width:200px;height:112px; opacity:0; position:absolute; bottom:0;  left: 50%;  margin-left: -100px;'></a>");
+        }
+        else {
+            $("#localImag").append("<input type='file' name='file' id='txtimg' style='width:200px;height:112px; opacity:0; position:absolute; bottom:0;  left: 50%;  margin-left: -100px;'>");
+
+            //上传图片
+            $("#txtimg").change(function (data) {
+                var formData = new FormData();
+                formData.append('file', $('#txtimg')[0].files[0]);
+                var parms = {
+                    path: 'xueba/img'
+                };
+                $.ajax({
+                    //url: '/v1/file/UploadActivity?activityname=xueba&ismultiple=false',
+                    url: 'http://backbone.youjiaoyun.net/v1/file/upload?' + $.param(parms),
+                    type: 'POST',
+                    cache: false,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $("#preview").showLoading();
+                    },
+                    complete: function () {
+                        $("#preview").hideLoading();
+                    },
+                }).done(function (res) {
+                    console.log(res.data);
+                    var strdata = res.data;
+                    alert(strdata);
+                    $("#hidimg").val(strdata.url);
+                    $("#preview").attr("src", strdata.url + '@Html.Raw("@500w_500h_100q")');
+                }).fail(function (res) {
+                    console.log(res);
+                });
+            })
+        }
+
+    })
+
+
+
+    //安卓图片上传
+    function showAndroidToast() {
+        var parms = {
+            path: 'xueba/img'
+        };
+        JavaScriptInterface.showActionSheetDialog(1, "http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/v1/file/UploadActivity?activityname=xueba&ismultiple=false");
+
+        //JavaScriptInterface.showActionSheetDialog(1, "http://" + "@HttpContext.Current.Request.Url.Host.ToString()" +"http://backbone.youjiaoyun.net/v1/file/upload?" + $.param(parms));
+    }
+
+    //返回上传后的图片名称并且显示
+    function getuploadimgs(imgs) {
+        $("#hidimg").val(imgs);
+        $("#preview").attr("src", "/upload/activity/xueba/" + imgs);
+    }
+
+    //提交表单
+    function BtnSubmit() {
+        //验证必填信息
+        if ($("#hidimg").val() == "") {
+            easyDialog.open({
+                container: {
+                    content: '请选择图片！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if ($("#txtname").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '宝贝昵称不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+        if ($("#txtage").val().trim().length == 0) {
+            easyDialog.open({
+                container: {
+                    content: '宝贝年龄不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        PostApplyInfo();
+    }
+
+
+    //提交表单
+    function PostApplyInfo() {
+
+        var source = '@ViewBag.source';
+        var userid = '@ViewBag.uid';
+        var data = {
+            "Uid": userid,
+            "Name": $("#txtname").val(),
+            "Age": $("#txtage").val(),
+            "Describe": $("#txtdesc").val(),
+            "Source": source,
+            "ImgUrl": $("#hidimg").val()
+        }
+        console.log(JSON.stringify(data));
+        $.ajax({
+            type: 'POST',
+            url: '/v1/superscholar',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function () {
+                // 禁用按钮防止重复提交
+                $("#btnsubmit").attr({ disabled: "disabled" });
+                $("#activity_pane").showLoading();
+                $("#preview").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+                //$("#preview").hideLoading();
+            },
+            success: function (result) {
+                window.location.href = '@Url.Action("Detail")' + "?id=" + result.data.id + "&uid=@ViewBag.uid&source=@ViewBag.source";
+                return false;
+            },
+            error: function (einfo) {
+                $("#btnsubmit").attr({ disabled: "false" });
+            }
+        });
+    }
+
+</script>

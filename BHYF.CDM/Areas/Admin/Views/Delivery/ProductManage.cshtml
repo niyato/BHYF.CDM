@@ -1,0 +1,153 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutDelivery.cshtml";
+}
+
+
+<div class="rightContent">
+    <div class="rightContentBox">
+        <div class="subnav"><a href="">首页</a> > 产品申请 > 产品名称管理</div>
+        <!--申请详情-->
+
+
+        <div style=" width:100%; display:inline-block; margin-top:20px;">
+            <div class="fr">
+                <button type="button" class="addsBtn" data-toggle="modal" data-target="#addSource">新增物品</button>
+            </div>
+        </div>
+
+
+        <div class="applicationbox">
+            <table style="width:100%;border:0;"cellspacing="0" class="accTabbox" id="tlist">
+                <tr>
+                    <th scope="col">商品名称</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </table>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+<!--弹出窗口 添加资源-->
+<div class="modal fade" id="addSource" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">添加分类</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form class="form-horizontal">
+                        <div class="form-group ">
+                            <label for="sName" class="col-xs-3 control-label">产品名称：</label>
+                            <div class="col-xs-8 ">
+                                <input type="text" class="form-control input-sm duiqi" id="sName" placeholder="">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="preserveBtn" data-dismiss="modal" id="btnsubmit">保存</button>
+                <button type="button" class="preserveBtn" id="btncancel">取消</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<!--弹出删除警告窗口-->
+<div class="modal fade" id="deleteSource" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    确定要删除该项？删除后不可恢复！
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="preserveBtn" data-dismiss="modal">确 定</button>
+                <button type="button" class="preserveBtn">取 消</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!--弹窗-->
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            type: "Get",
+            dataType: "json",//数据格式:JSON
+            url: '/v1/delivery/GetDeliveryProduct',//目标地址
+            success: function (json) {
+                var resultData = json.data;
+                $.each(resultData, function (i, obj) {
+                    $("#tlist").append("<tr>"
+                        + "<td>" + obj.productName + "</td>"
+                        + "<td><a href='#' onclick='DelProduct(" + obj.pid + ")'>删除</a></td>"
+                    + "</tr>");
+                });
+            }
+        });
+    })
+
+    $("#btnsubmit").click(function () {
+        if ($("#sName").val().trim() == "") {
+            alert('请输入商品名称');
+            return false;
+        }
+
+        var data = {
+            "ProductName": $("#sName").val(),
+            "ProductCode": ""
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/v1/delivery/CreateDeliveryProduct',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert('添加成功');
+                $('#addSource').modal('hide');
+                window.location.href = '@Url.Action("ProductManage")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log("新增失败" + einfo);
+            }
+        })
+    })
+
+    function DelProduct(id) {
+        if (confirm("确定要删除吗？")) {
+            $.ajax({
+                url: '/v1/delivery/DeleteDeliveryProduct?pid=' + id,
+                type: 'delete',
+            }).done(function (res) {
+                alert(res.data);
+                window.location.reload();
+            }).fail(function (res) { });
+        }
+    }
+
+    //取消添加
+    $("#btncancel").click(function () {
+        $('#addSource').modal('hide');
+    })
+</script>

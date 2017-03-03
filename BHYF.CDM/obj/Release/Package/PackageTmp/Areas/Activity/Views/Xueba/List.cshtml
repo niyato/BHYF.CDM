@@ -1,0 +1,363 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<script type="text/javascript" src="@Url.Content("~/Content/Scripts/jquery.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Content/Scripts/jquery.lazyload.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/easydialog.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.showLoading.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.cookie.js")"></script>
+<div class="row" id="activity_pane">
+    <!-- 排行榜列表 -->
+    <div class="main">
+        <!-- 统计数据 -->
+        <div class="statistics">
+            <div class="statcolumn">
+                <h3>总参赛数</h3>
+                <p id="divp1"></p>
+            </div>
+            <div class="line"></div>
+            <div class="statcolumn">
+                <h3>总红花数</h3>
+                <p id="divp2"></p>
+            </div>
+            <div class="line"></div>
+            <div class="statcolumn">
+                <h3>总访问量</h3>
+                <p id="divp3"></p><!--最多8位数-->
+            </div>
+        </div>
+
+        <!-- 搜索 -->
+        <div class="searchbox">
+            <form method="post">
+                <strong>
+                    <input type="text" name="keyword" maxlength="10" id="js-com-search-text" placeholder="输入编号搜索" />
+                    <input type="button" id="btnsearch" value=" " />
+                </strong>
+            </form>
+        </div>
+
+        <!-- 排行列表 -->
+        <div id="div1" class="homeProductsWrapper">
+        </div>
+    </div>
+</div>
+
+
+<div class="backHome"><a href="@Url.Action("index", new { source = @ViewBag.source, uid = @ViewBag.uid })" class="roseo">返回首页</a></div>
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jaliswall.js")"></script>
+<!-- 列表分两列 -->
+<script type="text/javascript">
+    function adaptPortfolio() {
+
+        $('.portfolioTwoItemsWrapper').css('width', $('.portfolioTwoPageWrapper').width() - 12 - 48);
+        $('.portfolioTwoFilterableItemsWrapper').css('width', $('.portfolioTwoFilterablePageWrapper').width() - 12 - 48);
+
+        var portfolioTwoItemWidth = ($('.portfolioTwoPageWrapper').width() - 96 - 36) / 2;
+        var portfolioTwoFilterableItemWidth = ($('.portfolioTwoFilterablePageWrapper').width() - 96 - 36) / 2;
+
+        $('.portfolioTwoItemWrapper').css('width', portfolioTwoItemWidth);
+        $('.portfolioTwoFilterableWrapper .portfolioFilterableItemWrapper').css('width', portfolioTwoFilterableItemWidth);
+
+    };
+
+    $(function () {
+        fenxiang();
+        BindSta();
+        BindList();
+
+        $('.homeProductsWrapper').jaliswall({ item: '.homeProductWrapper' });
+
+        $("#btnsearch").click(function () {
+            var keyword = $("#js-com-search-text").val();
+
+            if (keyword)
+                BindSeach(keyword);
+            else
+                BindList();
+        })
+
+
+
+    })
+
+    function fenxiang() {
+        var source = '@ViewBag.source';
+
+        if (source.indexOf("android") >= 0) {
+            //安卓分享
+            JavaScriptInterface.getBannerShare("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/List", "我是小学霸", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+
+        if (source.indexOf("ios") >= 0) {
+            //苹果分享
+            shareWebView("http://" + "@HttpContext.Current.Request.Url.Host.ToString()" + "/Activity/xueba/List", "我是小学霸", "", "http://manage.card.test.youjiaoyun.net/Content/xueba/images/home-top.png");
+        }
+    }
+
+    function BindSta() {
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: '/v1/superscholar/GetStatistics',
+            success: function (json) {
+                if (json.data) {
+                    $("#divp1").html(json.data.joinCount);
+                    $("#divp2").html(json.data.likesCount);
+                    $("#divp3").html(json.data.pvCount);
+                }
+            }
+        })
+    }
+
+
+    function BindList() {
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: '/v1/superscholar',
+            beforeSend: function () {
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function (json) {
+                var data = json.data;
+                console.log(json);
+                $("#div1").empty();
+                $("#div2").empty();
+                BindData(data);
+                //区域优先加载
+                $("img").lazyload({
+                    placeholder: "@Url.Content("~/Content/xueba/images/grey.gif")",
+                    effect: "fadeIn",
+                    threshold: 100
+                });
+            }
+        })
+    }
+
+
+    function BindData(data) {
+        var jsdiv1 = "";
+        var jsdiv2 = "";
+
+        $.each(data, function (i, obj) {
+            console.log(obj);
+            var copimg = obj.imgUrl + '@Html.Raw("@500w_500h_100q")';
+            //alert(obj.imgUrl.substring(0, 4));
+            if (obj.imgUrl.substring(0, 4) == "http") {
+                if ((i % 2 == 0)) {
+                    jsdiv1 += "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                          "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                            "<div class='homeProductBox'>" +
+                            "<img src='" + copimg + "' class='homeImg'  >" +
+                                "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                            "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                            "</div>" +
+                        "</a>" +
+                        "<div class='homeProductInfoWrapper'>" +
+                            "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                            "<p class='homeProductData'>" +
+                                "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                                "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                            "</p>" +
+                            "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+                        "</div>" +
+                    "</div>";
+
+
+                }
+                else {
+                    jsdiv2 +=
+             "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                   "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                     "<div class='homeProductBox'>" +
+                     "<img src='" + copimg + "' class='homeImg'>" +
+                         "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                     "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                     "</div>" +
+                 "</a>" +
+                 "<div class='homeProductInfoWrapper'>" +
+                     "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                     "<p class='homeProductData'>" +
+                         "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                         "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                     "</p>" +
+                     "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+             "</div>" +
+         "</div>";
+
+                }
+            }
+             @*else if (obj.imgUrl = "") {
+                if ((i % 2 == 0)) {
+                    jsdiv1 += "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                      "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                        "<div class='homeProductBox'>" +
+                        "<img src='@Url.Content("~/Content/xueba/images/default-small-img.png")' class='homeImg'  >" +
+                            "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                        "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                        "</div>" +
+                    "</a>" +
+                    "<div class='homeProductInfoWrapper'>" +
+                        "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                        "<p class='homeProductData'>" +
+                            "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                            "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                        "</p>" +
+                        "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+                    "</div>" +
+                "</div>";
+                } else {
+                    jsdiv2 += "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                      "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                        "<div class='homeProductBox'>" +
+                        "<img src='@Url.Content("~/Content/xueba/images/default-small-img.png")' class='homeImg'  >" +
+                            "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                        "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                        "</div>" +
+                    "</a>" +
+                    "<div class='homeProductInfoWrapper'>" +
+                        "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                        "<p class='homeProductData'>" +
+                            "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                            "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                        "</p>" +
+                        "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+                    "</div>" +
+                "</div>";
+                }
+
+
+            }*@
+            else{
+                if ((i % 2 == 0)) {
+                    jsdiv1 += "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                          "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                            "<div class='homeProductBox'>" +
+                            "<img src='@Url.Content("/upload/activity/xueba/")" + obj.imgUrl + "' class='homeImg'  >" +
+                                "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                            "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                            "</div>" +
+                        "</a>" +
+                        "<div class='homeProductInfoWrapper'>" +
+                            "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                            "<p class='homeProductData'>" +
+                                "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                                "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                            "</p>" +
+                            "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+                        "</div>" +
+                    "</div>";
+
+
+                }
+                else {
+                    jsdiv2 +=
+             "<div class='" + (obj.likes >= 88 ? "homeProductWrapper homeProductFull" : "homeProductWrapper") + "'>" +
+                   "<a href='@Url.Action("detail")?id=" + obj.id + "&uid=@ViewBag.uid&source=@ViewBag.source'>" +
+                     "<div class='homeProductBox'>" +
+                     "<img src='@Url.Content("/upload/activity/xueba/")" + obj.imgUrl + "' class='homeImg'>" +
+                         "<p class='number'>" + pad(obj.id, 3) + "</p>" +
+                     "<img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "big-full-star.png" : "small-star.png") + "' class='smallstar'>" +
+                     "</div>" +
+                 "</a>" +
+                 "<div class='homeProductInfoWrapper'>" +
+                     "<p class='homeProductTitle'>" + obj.name + "</p>" +
+                     "<p class='homeProductData'>" +
+                         "<span class='fl'><b id='blikes" + obj.id + "'>" + obj.likes + "</b> 赞</span>" +
+                         "<span class='fr'>排名 <b>" + obj.rank + "</b></span>" +
+                     "</p>" +
+                     "<a href='#' class='basketfulBtn' title='" + obj.id + "'><img src='@Url.Content("~/Content/xueba/images/")" + (obj.likes >= 88 ? "basketful.png" : "small-liked.png") + "'></a>" +
+             "</div>" +
+         "</div>";
+
+                }
+            }
+
+
+        })
+
+        $("#div1").append("<div class='wall-column'>" + jsdiv1 + "</div>");
+        $("#div1").append("<div class='wall-column'>" + jsdiv2 + "</div>");
+        $("#div1").append("<div class='clear'></div>");
+
+
+        $(".basketfulBtn").click(function () {
+            if ($.cookie("vote") != null) {
+                easyDialog.open({
+                    container: {
+                        content: '一天只能投一次哦！',
+                    },
+                    autoClose: 2000
+                });
+                return;
+            } else {
+                var id = $(this).attr('title'); //活动id
+                AddLikes(id);
+            }
+        })
+    }
+
+    //投票
+    function AddLikes(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/v1/superscholar/AddLikes',
+            data: { "": id },
+            success: function (result) {
+                $("#blikes" + id + "").html(parseInt($("#blikes" + id + "").text()) + 1); //票数加1
+                $("#divp2").html(parseInt($("#divp2").text()) + 1);
+                easyDialog.open({
+                    container: {
+                        content: '谢谢投票!！',
+                    },
+                    autoClose: 2000
+                });
+                //写cookie到客户端
+                $.cookie("vote", "XXX", { expires: 1, path: "/" });
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+
+
+    //搜索
+    function BindSeach(keyword) {
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: '/v1/superscholar/GetInfoByKeyWord?keyword=' + keyword,
+            beforeSend: function () {
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function (json) {
+                var data = json.data;
+                console.log(data);
+                $("#div1").empty();
+                if (data.length > 0)
+
+                    BindData(data);
+
+                else {
+                    $("#div1").html("没有找到合适的内容");
+                }
+
+            }
+        })
+
+    }
+
+
+
+</script>

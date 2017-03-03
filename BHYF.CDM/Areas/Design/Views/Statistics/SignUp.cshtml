@@ -1,0 +1,189 @@
+﻿
+@{
+    Layout = "~/Areas/Design/Views/Shared/_LayoutStatistics.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<script src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+<style>
+    table{border:1px solid #ccc;border-collapse:collapse;width:100%}
+    table th,table td{height:67px;border:1px solid #ccc;text-align:center}
+    table th{background-color:#f2f2f2}
+    .box{margin-bottom:20px;}
+    label{margin-right:20px;margin-left:20px;font-weight:normal}
+    .box input{margin-top:12px;}
+    .box img{margin-left:300px;cursor:pointer}
+    #ImgBox{height:300px;width:250px;display:none;background-color:#fff}
+    #ImgBox img{height:250px;width:170px;margin-top:32px;margin-left:30px}
+    #ImgBox .closeImg{position:absolute;right:10px;top:-20px;height:16px;width:16px;cursor:pointer;}
+    table span{margin-right:6px;}
+    table .editImg{cursor:pointer;}
+</style>
+<script type="text/javascript">
+    function Check(node)
+    {
+        if (node)
+            return node;
+        return "/";
+    }
+    function CheckImg(node)
+    {
+        if (node)
+            return "<a class='LookMore' href='#' src='" + node + "'>查看<a>";
+        return "/";
+    }
+    function GetStrByJson(json) {
+        return "<tr>" +
+                   "<td>" + json["id"] + "</td>" +
+                   "<td>" + json["userName"] + "</td>" +
+                   "<td>" + Check(json["phone"]) + "</td>" +
+                   "<td>" + Check(json["QQ"]) + "</td>" +
+                   "<td>" + Check(json["job"]) + "</td>" +
+                   "<td>" + Check(json["sex"]) + "</td>" +
+                   "<td>" + Check(json["label"]) + "</td>" +
+                   //"<td>" + json["labal"] + "</td>" +
+                   "<td>" + CheckImg(json["picUrl"]) + "</td>" +
+                   "<td>" + (json["createTime"] ? moment(json["createTime"]).format('YYYY-MM-DD HH:mm:ss') : '/') + "</td>" +
+                   "<td><span>" + json["count"] + "</span><img class='editImg' src='@Url.Content("~/Content/images/updatebtn.png")'/></td>" +
+                   "<td>" + json["share"] + "</td>" +
+                   "</tr>";
+    }
+    $().ready(function () {
+        var oldvalue = 0;
+        $("table tbody").click(function () {
+            var node = event.srcElement;
+            switch (node.className) {
+                case "LookMore":
+                    var str = "upload/PersonImage/" + $(node).attr("src");
+                    $("#ImgBox").css({ "display": "block", "position": "absolute", "left": 600, "top": 250 });
+                    $("#ImgBox .imgshow").attr("src", str);
+                    break;
+                case "editImg":
+                    var pa = $(node).parent();
+                    oldvalue = pa.children(0).html();
+                    pa.empty();
+                    pa.append("<input type='text' class='inputnum' style='width:80px'/>");
+                    break;
+                default:
+                    if (node.className != "inputnum") {
+                        var $input = $(".inputnum");
+                        var id = $input.parent().parent().children().eq(0).text();
+                        if ($input.val()) {
+                            var str = parseInt($input.val());
+                            if (isNaN(str)) {
+                                alert("只能输入整数哦！");
+                                var pa = $input.parent();
+                                pa.empty();
+                                pa.append("<span>" + oldvalue + "</span><img class='editImg' src='@Url.Content("~/Content/images/updatebtn.png")'/>");
+                                return;
+                            }
+                            if (str == "")
+                                str = oldvalue;
+                            console.log("SignUp/Update?id=" + id + "&count=" + str);
+                            $.getJSON("SignUp/Update?id=" + id + "&count=" + str, function (json) {
+                                if (json.data == "OK") {
+                                    var pa = $input.parent();
+                                    pa.empty();
+                                    pa.append("<span>" + str + "</span><img class='editImg' src='@Url.Content("~/Content/images/updatebtn.png")'/>");
+                                }
+                            });
+                        }
+                    }
+            }
+        });
+        $("#ImgBox .closeImg").click(function () {
+            $("#ImgBox").css("display", "none");
+        });
+        $(".box img").click(function () {
+            var txtname = $("#TxtName").val();
+            var txtnum = $("#TxtNum").val();
+            initData(0, txtname, txtnum);
+        });
+    });
+
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+    $(function () {
+        initData(0);
+    });
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0)
+            initData(page_id);
+    }
+    function initData(pageindx, txtname, txtnum) {
+        var tbody = "";
+        var pageCount = "";
+        var str = "page=" + (pageindx + 1) + "&limit=" + pageSize;
+        if (txtname)
+            str += ("&Name=" + txtname);
+        if (txtnum)
+            str += ("&Num=" + txtnum);
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: "/SignUp/GetAllSignUP",//目标地址
+            async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+            data: str,
+            //beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            //complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                var resultData = json.data;
+                pageCount = json.total;
+                if (resultData == "") {
+                    $("#divload").hide();
+                    return false;
+                }
+                $("table tbody").empty();
+                var str = "";
+                $.each(resultData, function () {
+                    str += GetStrByJson(this);
+                });
+                $("table tbody").append(str);
+                if (pageCount != 0) {
+                    $("#divpage").pagination(pageCount, {
+                        callback: pageselectCallback,
+                        prev_text: '<< 上一页',
+                        next_text: '下一页 >>',
+                        items_per_page: 10,
+                        num_display_entries: 6,
+                        current_page: pageindx,
+                        num_edge_entries: 2
+                    });
+                }
+            }
+        });
+    }
+</script>
+<div class="box">
+    <label>报名名称</label><input type="text" id="TxtName"/>
+    <label>报名编号</label><input type="text" id="TxtNum"/>
+    <img src="@Url.Content("~/Content/images/btn_search.png")"/>
+</div>
+<table>
+    <thead>
+        <th>报名人ID</th>
+        <th>报名名称</th>
+        <th>手机号码</th>
+        <th>QQ号码</th>
+        <th>职业</th>
+        <th>性别</th>
+        <th>标签</th>
+        @*<th>简介</th>*@
+        <th>头像</th>
+        <th>报名时间</th>
+        <th>投票数</th>
+        <th>被分享数</th>
+    </thead>
+    <tbody>
+        <tr style="display:none">
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<div id="divpage" class="flickr" style="margin-top:20px;margin-bottom:20px;"></div>
+<div id="ImgBox">
+    <img class="imgshow"/>
+    <img class="closeImg" src="@Url.Content("~/Content/images/close.png")"/>
+</div>

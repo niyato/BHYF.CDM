@@ -1,0 +1,120 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type">
+    <meta content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <title>免费环创设计-我的申请</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    @Scripts.Render("~/bundles/jquery")
+    <script type="text/javascript">
+        $(function () {
+            var applyid = '@ViewBag.applyid';
+            $.ajax({
+                type: "Get",//用POST方式传输
+                dataType: "json",//数据格式:JSON
+                url: '/v1/design/' + parseInt(applyid),//目标地址
+                async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+                //beforeSend: function () { $("#divload").show(); $("#divpage").hide(); },//发送数据之前
+                //complete: function () { $("#divload").hide(); $("#divpage").show(); },//接收数据完毕
+                success: function (json) {
+                    var data = json.data;
+                    if (data) {
+                        $("div ul li").eq(0).find("div").eq(1).html(data.apply_name);
+                        $("div ul li").eq(1).find("div").eq(1).html(data.apply_phone);
+                        $("div ul li").eq(2).find("div").eq(1).html(data.apply_address);
+                        $("div ul li").eq(3).find("div").eq(1).html(data.apply_gardenName);
+                        $("div ul li").eq(4).find("div").eq(1).html(data.apply_nature);
+                        $("div ul li").eq(5).find("div").eq(1).html(data.apply_budget);
+                        $("div ul li").eq(6).find("div").eq(1).html(data.apply_area);
+                        $("div ul li").eq(7).find("div").eq(1).html(data.apply_time);
+                        $("div ul li").eq(8).find("div").eq(1).html(data.apply_content);
+                        BindImgs(applyid);
+                    }
+                }
+            })
+        })
+
+        function BindImgs(aid) {
+            //初始化图片
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: '/v1/file/GetFiles?id=' + aid,
+                success: function (result) {
+                    console.log(JSON.stringify(result.data));
+                    if (result.data) {
+                        var array = result.data.split(",");
+                        for (var i = 0 ; i < array.length ; i++) {
+                            $("div ul li").eq(9).find("ul").eq(0).append("<li><img src='/upload/applydesign/" + aid + "/" + array[i] + "'></li>");
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="infolist">
+        <ul>
+            <li>
+                <div class="fl">您的姓名</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">联系方式</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">园所位置</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">园所名称</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">园所性质</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">预算金额</div>
+                <div class="fr grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl" style="margin-bottom:0;">安装位置</div>
+                <div class="fr grey"></div>
+            </li>
+
+            <li>
+                <div class="fl">预计安装时间</div>
+                <div class="fr grey"></div>
+            </li>
+            <li>
+                <div class="fl">需求描述</div>
+                <div class="fl depict grey">
+                </div>
+            </li>
+            <li>
+                <div class="fl">上传图片</div>
+                <ul class="parklist">
+                </ul>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

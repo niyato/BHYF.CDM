@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <link rel="stylesheet" href="@Url.Content("/Content/delivery/css/style.css")">
+    @Scripts.Render("~/bundles/jquery")
+
+    <!--内容切换-->
+    <script type="text/javascript" src="@Url.Content("/Scripts/common.js")"></script>
+
+    <!--内容块下拉框-->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("/Content/delivery/css/easydropdown.css")" />
+    <script type="text/javascript" src="@Url.Content("/Scripts/jquery.easydropdown.js")"></script>
+
+    <!--弹窗-->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("/Content/delivery/css/bootstrap.min.css")" />
+    <script type="text/javascript" src="@Url.Content("/Scripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.showLoading.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/easydialog.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+    <style type="text/css">
+        .loading-indicator {
+            height: 80px;
+            width: 80px;
+            background: url( '/content/images/loading.gif' );
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .loading-indicator-overlay {
+            background-color: #FFFFFF;
+            opacity: 0.6;
+            filter: alpha(opacity = 60);
+        }
+
+        .easyDialog_wrapper {
+            width: 180px;
+            color: #fff;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            display: none;
+            font-family: "Microsoft yahei", Arial;
+        }
+
+            .easyDialog_wrapper .easyDialog_content {
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                border-radius: 4px;
+                background: #888;
+                padding: 10px;
+            }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <div class="header">
+            <div class="top">
+                <div class="fl"><a href="" class="logo">产品发货管理</a></div>
+                <div class="fr signOut">欢迎，@ViewBag.manager <a href="@Url.Action("DeliveryLogOff","Manage")" class="mL10">退出</a></div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="leftMenu">
+                <ul class="mT10" id="menudiv"></ul>
+            </div>
+            @RenderBody()
+        </div>
+    </div>
+
+
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        var mgroupid = '@ViewBag.mgroupid';
+        if (mgroupid > 0) {
+            $.ajax({
+                type: 'Get',
+                url: '/v1/delivery/GetDeliveryMenu?mgid=' + mgroupid,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    console.log(result.data);
+                    $.each(result.data, function (i, obj) {
+                        $("#menudiv").append("<li><a href='/admin/delivery/" + obj.menuUrl+ "'>" + obj.menuName + "</a></li>");
+                    })
+                },
+                error: function (einfo) {
+                }
+            });
+        }
+    })
+
+    function GetStatusStr(status) {
+        switch (status) {
+            case "WaitAudit":
+                return "待审批";
+                break;
+            case "Audited":
+                return "待公司审批";
+                break;
+            case "WaitSend":
+                return "待发货";
+                break;
+            case "WaitReceived":
+                return "待收货";
+                break;
+            case "Received":
+                return "已签收";
+                break;
+            case "Refuse":
+                return "拒绝";
+                break;
+            default:
+                return "";
+                break;
+        }
+    }
+
+</script>

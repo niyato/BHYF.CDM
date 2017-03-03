@@ -1,0 +1,63 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/theme.css")">
+    <style type="text/css">
+        #line-chart {
+            height: 300px;
+            width: 800px;
+            margin: 0px auto;
+            margin-top: 1em;
+        }
+
+        .navbar-default .navbar-brand, .navbar-default .navbar-brand:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="theme-blue">
+
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a href="http://www.61pic.com/">
+                <span class="navbar-brand"> 碧海银帆科技有限公司</span>
+            </a>
+        </div>
+        <div class="navbar-collapse collapse" style="height: 1px;">
+        </div>
+    </div>
+
+    <div class="dialog">
+        <div class="panel panel-default">
+            <p class="panel-heading no-collapse">登录</p>
+            <div class="panel-body">
+                <form action="@Url.Action("Login")" method="post">
+                    @Html.ValidationSummary(true)
+                    <div class="form-group">
+                        <label>账号</label>
+                        <input name="UserName" type="text" value="@ViewData["username"]" class="form-control span12" required />
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input name="Password" type="password" value="@ViewData["userpass"]" class="form-controlspan12 form-control" required />
+                    </div>
+                    <input type="submit" value="登录" class="btn btn-primary pull-right" />
+                    <label class="remember-me"><input type="checkbox" name="RememberMe" id="RememberMe" @ViewData["CHECKBOX"] />记住密码</label>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

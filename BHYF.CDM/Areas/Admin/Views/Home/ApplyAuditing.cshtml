@@ -1,0 +1,133 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/pagination.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.pagination.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/moment.js")"></script>
+
+<div id="activity_pane">
+    <div class="col-sm-12">
+        <form class="form-horizontal well">
+            <div class="form-group">
+                <label class="col-sm-1 control-label">园名称</label>
+                <div class="col-sm-4">
+                    <input id="gname" class="ember-view ember-text-field form-control" placeholder="模糊匹配" type="text">
+                </div>
+                <label class="col-sm-1 control-label">状态</label>
+                <div class="col-sm-2">
+                    @Html.DropDownList("applyenumlist", null, "请选择", new { @id = "selstatus", @class = "ember-view ember-select form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">申请来源</label>
+                <div class="col-sm-4">
+                    @Html.DropDownList("applysource", null, "请选择", new { @id = "selsource", @class = "ember-view ember-select form-control" })
+                </div>
+                <div class="col-sm-2">
+                    <input type="button" id="btnsearch" class="btn-default" value="查询" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>园所名称</th>
+                <th>申请人</th>
+                <th>跟踪人</th>
+                <th>联系方式</th>
+                <th>原始出处</th>
+                <th>申请时间</th>
+                <th>状态</th>
+                <th>操作</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="divpage" class="flickr" style="text-align: left"></div>
+</div>
+
+
+<script type="text/javascript">
+    var pageIndex = 0;     //页面索引初始值
+    var pageSize = 10;
+
+    $(function () {
+        initData(0);
+    });
+
+    $("#btnsearch").click(function () {
+        var gname = $("#gname").val();
+        var status = $("#selstatus").val();
+        var source = $("#selsource").val();
+        initData(0, gname, status, source)
+    })
+
+    //翻页响应
+    function pageselectCallback(page_id, jq) {
+        if (page_id >= 0) {
+            var gname = $("#gname").val();
+            var status = $("#selstatus").val();
+            var source = $("#selsource").val();
+            initData(page_id, gname, status, source);
+        }
+    }
+
+    function initData(pageindx, gname, status, source) {
+        var tbody = "";
+        var pageCount = "";
+        var applystatus = '@ViewBag.ApplyStatus';
+        if (status)
+            applystatus = status;
+
+        var strdata = "status=" + applystatus + "&page=" + (pageindx + 1) + "&limit=" + pageSize + "&orderBy=createtime&ascending=" + false;
+        if (gname)
+            strdata += "&gname=" + gname;
+        if (source)
+            strdata += "&source=" + source;
+        $.ajax({
+            type: "Get",//用POST方式传输
+            dataType: "json",//数据格式:JSON
+            url: '/v1/design',//目标地址
+            async: false,//作用是防止在ajax成功调用之前就调用$("#divpage").pagination,这个时候数据个数还没有初始化
+            data: strdata,
+            beforeSend: function () { $("#activity_pane").showLoading(); },//发送数据之前
+            complete: function () { $("#activity_pane").hideLoading(); },//接收数据完毕
+            success: function (json) {
+                console.log(json);
+                var resultData = json.data;
+                pageCount = json.total;
+
+                $(".table tbody").empty();
+                if (resultData == "") {
+                    $("#divload").hide();
+                }
+                $.each(resultData, function (i, obj) {
+                    $(".table tbody").append("<tr>" +
+                        "<td>" + obj.apply_gardenName + "</td>" +
+                        "<td>" + obj.apply_name + "</td>" +
+                        "<td>" + (obj.rname ? obj.rname : "") + "</td>" +
+                        "<td>" + (obj.apply_phone ? obj.apply_phone : '') + "</td>" +
+                        "<td>" + (obj.apply_source ? obj.apply_source : "") + "</td>" +
+                        "<td>" + (obj.apply_createTime ? moment(obj.apply_createTime).format('YYYY-MM-DD') : '') + "</td>" +
+                        "<td>" + GetStatusStr(obj.apply_status) + "</td>" +
+                        "<td><a href='@Url.Action("ApplyRead")?id=" + obj.apply_id + "'>审核</a>" +
+                        "</td></tr>");
+                });
+            }
+        });
+
+        // if (pageCount != 0) {
+        $("#divpage").pagination(pageCount, {
+            callback: pageselectCallback,
+            prev_text: '<< 上一页',
+            next_text: '下一页 >>',
+            items_per_page: 10,
+            num_display_entries: 6,
+            current_page: pageindx,
+            num_edge_entries: 2
+        });
+        // }
+    }
+</script>

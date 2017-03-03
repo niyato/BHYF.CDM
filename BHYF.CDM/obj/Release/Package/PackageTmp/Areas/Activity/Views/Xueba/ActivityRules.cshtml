@@ -1,0 +1,10 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<div class="main">
+    <img src="@Url.Content("~/Content/xueba/images/activity.png")" alt="我是小学霸" class="w90">
+    <div style="height:50px; width:100%;"></div>
+</div>
+
+<div class="backHome"><a href="@Url.Action("index", new { source = ViewBag.source, uid = ViewBag.uid })" class="roseo">返回首页</a></div>

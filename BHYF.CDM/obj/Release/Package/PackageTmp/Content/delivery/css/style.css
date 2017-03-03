@@ -1,0 +1,147 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* CSS重置 */  
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{margin:0;padding:0;}  
+body{ font-size:14px; line-height:24px; font-family: Arial,"微软雅黑"; background:#fff; color:#5f5f5f; -webkit-text-size-adjust:100%;}  
+table { border-collapse:collapse; border-spacing:0;}  
+fieldset,img { border:0;}  
+address,caption,cite,code,dfn,em,strong,th,var,optgroup { font-style:normal; font-weight: normal;}  
+del,ins{text-decoration:none;}  
+ol,ul,li { list-style:none;}  
+caption,th { text-align:left;}  
+h1,h2,h3,h4,h5,h6 { font-size:100%; font-weight:normal;}  
+q:before, q:after { content:'';}  
+abbr,acronym { border:0;font-variant:normal;}  
+sup{vertical-align:baseline;}  
+sub{vertical-align:baseline;}  
+legend{color:#000;}  
+input,button,textarea,select,optgroup,option{font-family:inherit;font-size:inherit;font-style:normal;font-weight:normal; outline:none;}  
+input,button,textarea,select{*font-size:100%; border:0;}  
+textarea { resize:none;}  
+i, em, strong { font-style:normal;}  
+.clearfix:after { content:"."; display:block; height:0; clear:both; visibility:hidden;}  
+.clearfix{ display:inline-block;}  
+.clear{clear:both; height: 0; line-height: 0; font-size: 0}
+.fl{ float:left;}
+.fr{ float:right;}
+.green{color:#95c72c;}
+a{ text-decoration:none;}
+.tR{text-align: right;}
+.tC{ text-align:center;}
+.mR10{ margin-right:10px;}
+.mR15{ margin-right:15px;}
+.mR25{ margin-right:25px;}
+.mL10{ margin-left:10px;}
+.mL20{ margin-left:20px;}
+.mT20{ margin-top:20px;}
+.mT10{ margin-top:10px;}
+.mB10{ margin-bottom:10px;}
+.mB20{ margin-bottom:20px;}
+
+.poR{ position:relative;}
+.poA{ position:absolute;}
+
+#wrap{min-width: 100%;
+	position: absolute;
+	min-height: 100%;
+	overflow: hidden;}
+/*头部*/
+.header{position: fixed;right: 0;left: 0;z-index: 1030;margin-bottom: 0;}
+.top{ background:#354457; color:#aab1b7;/*min-width:1040px;*/ width:100%; height:60px;}
+.top a.logo { line-height:60px; font-size:25px; color:#fff; text-decoration:none;margin:0 30px;}
+.signOut{ padding:18px 30px;}
+.signOut a{ color:#aab1b7;}
+
+.content{margin-top: 60px; /*min-width: 1040px;*/}
+
+.leftMenu{ width:200px;height: 100%; background:#4d5e70;position: absolute;   box-sizing: border-box;}
+.leftMenu li a{ text-decoration:none; color:#aab1b7;}
+.leftMenu li a.on{color:#fff;}
+.leftMenu ul>li{font-size:16px; padding:10px 0 10px 30px;}
+
+.rightContent{ margin-left:200px;}
+.rightContentBox{ padding:20px 30px;}
+.subnav{ border-bottom:1px solid #bdc3c7;padding-bottom: 10px;}
+.subnav a{ color:#5f5f5f;}
+.searchbox{ margin-top: 15px;}
+.searchbox >div{ float:left; margin-bottom: 20px;}
+.searchInput{ padding:6px; border:1px solid #bdc3c7;width: 138px;}
+.searchBtn{ background:#34495e; color:#fff; padding:0px 25px;line-height:30px;cursor: pointer; border-radius:3px;}
+.addsBtn{ border:1px solid #34495e; color:#34495e; padding:0px 15px;line-height:28px;cursor: pointer; background:#fff; border-radius:3px;}
+
+.applicationbox{box-shadow: 0 0px 5px #ddd; margin-top:20px;}
+.applicationbox th,.applicationbox td{ padding:10px; border-bottom:1px solid #D2DAE0;}
+.applicationbox th{ background:#e3e8ee; font-weight:bold;}
+.applicationbox td a{color:#4D5E70; text-decoration:underline;}
+
+
+/*翻页*/
+.pagebox{text-align: right; margin-top: 20px;}
+.page li{ display:inline;}
+.page li a{ color:#999; padding:5px 10px;border: 1px solid #ddd;}
+.page>.active>a{color: #999;cursor: default;background-color: #f5f5f5;}
+.page>.disabled>a{cursor: default;background-color: transparent;}
+.page>li>a:hover{background-color:#f5f5f5;color: #999;}
+.page .disabled>a,.page .disabled>a:hover,.page .disabled>a:focus{color:#999;cursor:default;background-color:#fff}
+
+
+/*--------新增申请---------*/
+.bigTit{ text-align:center;line-height: 30px;}
+.bigTit h3{ font-size:18px; font-weight: bold;}
+.back{ border:1px solid #34495e; color:#34495e; padding:0px 15px;line-height:28px;cursor: pointer; background:#fff; border-radius:3px;}
+/*内容切换*/
+.investment_f{ width:100%; margin:20px auto}
+.investment_f .investment_title{height:40px;  border-bottom:2px solid #4d5e70; overflow:hidden}
+.investment_title div{ width:131px; height:40px; float:left; margin-right:6px; display:inline; font-size:14px; text-align:center; line-height:40px; color:#555; cursor:pointer;}
+.investment_title a,.investment_title a:link,.investment_title a:visited,.investment_title a:hover{ color:#555;width:131px; height:40px;display:inline-block}
+.investment_title div.on a,.investment_title div.on a:link,.investment_title div.on a:visited,.investment_title div.on a:hover{ color:#f70}
+.investment_title div.on{background:#4d5e70 ; color:#fff;}
+.investment_con{ clear:both; background:#fff; border:1px solid #D2DAE0;padding:20px;}
+.investment_con_list{display:none;}
+
+/*办事处*/
+.addsOffice label{ width:80px; text-align:right;float: left;}
+.addsOffice > div{ padding:10px 0;}
+
+.accTabbox th,.accTabbox td{ border:1px solid #D2DAE0; padding:10px; text-align:center;}
+.accTabbox td>a{ margin:0 10px; color:#4D5E70;}
+.preserveBtn{ background: #34495e; color: #fff; padding: 0px 25px; line-height: 30px; cursor: pointer; border-radius: 3px;}
+
+
+/*-------------申请详情---------------*/
+.applicationShow p{ padding-bottom:10px; width: 100%;float: left;}
+.applicationShow p span{ width:100px; text-align:right;margin-right: 10px; float:left;}
+.agreeInput{ border-bottom:1px solid #bdc3c7; padding:0 25px;width:100px;}
+.detailEditBox{ position:relative; border: 1px solid #D2DAE0; padding:20px;}
+.detailEdit{ position:absolute; top: 20px; right: 20px;}
+
+/*---------------收货回执单---------------*/
+.smallTit{ border-bottom:1px solid #bdc3c7; padding-bottom:5px;float: left;width: 100%;}
+.recipientInfoBox{ padding-top:20px; float: left;width: 100%;}
+.recipientInfoBox > div{ float:left; padding-bottom:20px;}
+.recipientInfoBox > div label{ width:80px; float:left; text-align:right;}
+.addpro{ position:absolute; top:0px; right:0px;}
+
+/*上传资料*/
+.default{ margin-top:16px;}
+#localImag{ position:relative;}
+
+
+/*弹窗样式*/
+.NumInput{ padding:6px; border:1px solid #bdc3c7;width: 68px;}
+
+
+/*------------------待公司审批-----------------------*/
+.Copybox{ float: left; width: 100%;}
+.Copybox > p > img{ width:100px; height:100px;}
+.pendingShow p{ padding-bottom:10px; width: 100%;float: left;}
+.pendingShow p span{ width:140px; text-align:right;margin-right: 10px; float:left;}
+
+.dealtbox > span{ margin-right:50px; display:inline-block;}
+
+
+/*发货单*/
+.invoiceInfoBox{ padding-top:20px; float: left;width: 100%;}
+.invoiceInfoBox > div{ float:left; padding-bottom:20px;}
+.invoiceInfoBox > div label{ width:115px; float:left; text-align:right;}

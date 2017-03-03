@@ -1,0 +1,390 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/bootstrap-fileinput/css/fileinput.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/fileinput.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/fileinput_locale_zh.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/json/CityJson.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/json/DistrictJson.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/json/ProJson.js")"></script>
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#home" data-toggle="tab">基础信息</a></li>
+    <li><a href="#profect" data-toggle="tab">完善信息</a></li>
+    <li><a href="#proimg" data-toggle="tab" id="divimgs" style="display:none;">图片</a></li>
+</ul>
+<div class="row" id="activity_pane">
+    <div class="col-md-12">
+        <br>
+        <form id="tab">
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active in" id="home">
+                    <div class="form-group" id="formaddress">
+                        省:<select name="selprovince" id="selProvince" class="form-control">
+                            <option value="0">-请选择省份-</option>
+                        </select>
+                        市:<select name="selcity" id="selCity" class="form-control">
+                            <option value="0">-请选择城市-</option>
+                        </select>
+                        区:<select name="selarea" id="selDistrict" class="form-control">
+                            <option value="0">-请选择区/县-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>幼儿园名称</label>
+                        <input name="apply_gardenName" type="text" class="form-control" maxlength="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label>负责老师姓名</label>
+                        <input name="apply_name" type="text" class="form-control" maxlength="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>负责老师电话</label>
+                        <input name="apply_phone" type="text" class="form-control" maxlength="20" required>
+                    </div>
+                </div>
+                <div id="profect" class="tab-pane fade">
+                    <div class="form-group">
+                        <label>园所性质</label>
+                        <select name="apply_nature" class="form-control">
+                            <option value="">请选择</option>
+                            <option value="公立">公立</option>
+                            <option value="私立">私立</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>预算金额</label>
+                        <select name="apply_budget" class="form-control">
+                            <option value="">请选择</option>
+                            <option value="5万以内">5万以内</option>
+                            <option value="5-10万">5-10万</option>
+                            <option value="10-20万">10-20万</option>
+                            <option value="20万以上">20万以上</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>环创区域</label>
+                        <fieldset>
+                            <input name="apply_area" type="checkbox" value="户外" />户外
+                            <input name="apply_area" type="checkbox" value="区角" />区角
+                            <input name="apply_area" type="checkbox" value="主题室" />主题室
+                            <input name="apply_area" type="checkbox" value="整体创设" />整体创设
+                            <input name="apply_area" type="checkbox" value="其他" />其他
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <label>主题风格</label>
+                        <fieldset>
+                            <input name="apply_style" type="checkbox" value="科学" />科学
+                            <input name="apply_style" type="checkbox" value="美术" />美术
+                            <input name="apply_style" type="checkbox" value="音乐" />音乐
+                            <input name="apply_style" type="checkbox" value="阅读室" />阅读室
+                            <input name="apply_style" type="checkbox" value="体感" />体感
+                            <input name="apply_style" type="checkbox" value="其他" />其他
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <label>预计安装时间</label>
+                        <input type="text" name="apply_time" placeholder="格式如:2016-06-22" class="form-control" maxlength="15">
+                    </div>
+                    <div class="form-group">
+                        <label>补充说明</label>
+                        <textarea name="apply_content" class="form-control" cols="5" maxlength="200"></textarea>
+                    </div>
+                    <div class="btn-toolbar list-toolbar">
+                        <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 保存</button>
+                        @Html.ActionLink("返回", "Demands", null, new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="proimg">
+                    <div class="form-group">
+                        <input id="txtfiles" type="file" multiple accept="image/png, image/jpeg" />
+                    </div>
+                    @Html.ActionLink("返回", "Demands", null, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var id = '@ViewBag.ID';
+        if (id > 0) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: '/v1/design/' + id,
+                success: function (result) {
+                    var json = result.data;
+                    console.log(json);
+                    $("#tab").setForm(json);
+                    $("#divimgs").show();
+                    $("#formaddress").empty();
+                    $("#formaddress").append("<label>幼儿园地址</label><input type='text' maxlength='50' id='txtaddress' value='" + (json.apply_address ? json.apply_address : "" )+ "' />");
+                    //绑定区域
+                    if (json.apply_area) {
+                        var arr = json.apply_area.split(',');
+                        $.each(arr, function (k, v) {
+                            $("input[name='apply_area'][value=" + v + "]").attr("checked", true);
+                        })
+                    }
+                    //绑定风格
+                    if (json.apply_style) {
+                        var arr = json.apply_style.split(',');
+                        $.each(arr, function (k, v) {
+                            $("input[name='apply_style'][value=" + v + "]").attr("checked", true);
+                        })
+                    }
+
+                    initfile(id);
+                    initFileInput(id);
+                }
+            })
+        }
+
+        $("#tab").submit(function (e) {
+            e.preventDefault();
+            BeginPostForm();
+        })
+
+        $.each(province, function (k, p) {
+            var option = "<option value='" + p.ProID + "'>" + p.ProName + "</option>";
+            $("#selProvince").append(option);
+        });
+
+        $("#selProvince").change(function () {
+            var selValue = $(this).val();
+            $("#selCity option:gt(0)").remove();
+            $("#selDistrict option:gt(0)").remove();
+
+            $.each(city, function (k, p) {
+                if (p.ProID == selValue) {
+                    var option = "<option value='" + p.CityID + "'>" + p.CityName + "</option>";
+                    $("#selCity").append(option);
+                }
+            });
+
+        });
+
+        $("#selCity").change(function () {
+            var selValue = $(this).val();
+            $("#selDistrict option:gt(0)").remove();
+
+            $.each(District, function (k, p) {
+                if (p.CityID == selValue) {
+                    var option = "<option value='" + p.Id + "'>" + p.DisName + "</option>";
+                    $("#selDistrict").append(option);
+                }
+            });
+        });
+    })
+
+    function initfile(aid) {
+        $('#txtfiles').fileinput({
+            language: 'zh', //设置语言
+            uploadUrl: '/v1/file/upload?aid=' + aid, //上传的地址
+            allowedFileExtensions: ['jpg', 'png', 'gif'],//接收的文件后缀
+            uploadAsync: true, //默认异步上传
+            maxFileCount: 9,
+            validateInitialCount: true, //是否验证最大上传数字
+            showPreview: true,
+            showRemove: false,
+            showUpload: false, //是否显示上传按钮
+            showCaption: false,//是否显示标题
+            browseClass: "btn btn-primary", //按钮样式
+            previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+            overwriteInitial: false
+        }).on("filebatchselected", function (event, files) {
+            // files.length 要上传图片的数量
+            // $(this).fileinput("upload");  //立即上传
+        }).on("fileuploaded", function (event, data) {
+            if (data.response) {
+                initFileInput(aid);
+            }
+        });
+    }
+
+    //初始化fileinput控件（第一次初始化）
+    function initFileInput(aid) {
+        //初始化图片
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: '/v1/file/GetFiles?id=' + aid,
+            success: function (result) {
+                if (result.data) {
+                    var array = result.data.split(",");
+                    var strinitialPreview = [];
+                    var strinitialPreviewConfig = [];
+                    for (var i = 0 ; i < array.length ; i++) {
+                        strinitialPreview.push("<img src='/upload/applydesign/" + aid + "/" + array[i] + "' class='file-preview-image' alt='图片' title='图片'>");
+                        strinitialPreviewConfig.push({
+                            caption: '',
+                            width: '120px',
+                            url: '/v1/file/delete?id=' + aid + '&fid=' + array[i],
+                            key: array[i],
+                            extra: function () {
+                                alert('删除成功');
+                            }
+                        });
+                    }
+
+                    $('#txtfiles').fileinput('refresh', {
+                        // uploadExtraData: { id: id },
+                        //预览图片的设置
+                        initialPreview: strinitialPreview,
+                        initialPreviewConfig: strinitialPreviewConfig
+                    });
+                }
+            }
+        });
+
+
+    }
+
+    //提交表单
+    function BeginPostForm() {
+        var id = '@ViewBag.ID';
+        var data = $("#tab").serializeJson();
+        data["apply_address"] = $("#selProvince").find("option:selected").text() + $("#selCity").find("option:selected").text() + $("#selDistrict").find("option:selected").text();
+
+        var apply_area = "";
+        var apply_style = "";
+        $("input[type=checkbox][name=apply_area]:checked").each(function () {
+            apply_area += $(this).attr("value") + ",";
+        });
+        $("input[type=checkbox][name=apply_style]:checked").each(function () {
+            apply_style += $(this).attr("value") + ",";
+        });
+
+        apply_area = apply_area ? apply_area.substring(0, apply_area.length - 1) : "";
+        apply_style = apply_style ? apply_style.substring(0, apply_style.length - 1) : "";
+
+        data["apply_area"] = apply_area;
+        data["apply_style"] = apply_style;
+
+        if (id > 0) {
+            EditForm(id, data);
+        }
+        else {
+            CreateFrom(data);
+        }
+    }
+
+    ///编辑需求
+    function EditForm(id, data) {
+        data["apply_address"] = $("#txtaddress").val();
+        data["apply_id"] = '@ViewBag.ID';
+        $.ajax({
+            type: 'PUT',
+            url: '/v1/design/' + id,
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function () {
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function (result) {
+                alert('修改成功');
+                window.location.href = '@Url.Action("Demands")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo + "修改失败");
+            }
+        });
+    }
+
+    //添加需求
+    function CreateFrom(data) {
+        data["apply_userid"] = '@ViewBag.Memberid';
+        data["appy_source"] = "后台";
+        $.ajax({
+            type: 'POST',
+            url: '/v1/design',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function () {
+                $("#activity_pane").showLoading();
+            },
+            complete: function () {
+                $("#activity_pane").hideLoading();
+            },
+            success: function (result) {
+                alert('添加成功');
+                window.location.href = '@Url.Action("Demands")';
+                return false;
+            },
+            error: function (einfo) {
+                console.log(einfo);
+            }
+        });
+    }
+
+    $.fn.setForm = function (jsonValue) {
+        var obj = this;
+        $.each(jsonValue, function (name, ival) {
+            var $oinput = obj.find("input[name=" + name + "]");
+            if ($oinput.attr("type") == "checkbox") {
+                if (ival !== null) {
+                    var checkboxObj = $("[name=" + name + "]");
+                    var checkArray = ival.split(";");
+                    for (var i = 0; i < checkboxObj.length; i++) {
+                        for (var j = 0; j < checkArray.length; j++) {
+                            if (checkboxObj[i].value == checkArray[j]) {
+                                checkboxObj[i].click();
+                            }
+                        }
+                    }
+                }
+            }
+            else if ($oinput.attr("type") == "radio") {
+                $oinput.each(function () {
+                    var radioObj = $("[name=" + name + "]");
+                    for (var i = 0; i < radioObj.length; i++) {
+                        if (radioObj[i].value == ival) {
+                            radioObj[i].click();
+                        }
+                    }
+                });
+            }
+            else if ($oinput.attr("type") == "textarea") {
+                obj.find("[name=" + name + "]").html(ival);
+            }
+            else {
+                obj.find("[name=" + name + "]").val(ival);
+            }
+        })
+    }
+
+    $.fn.serializeJson = function (otherString) {
+        var serializeObj = {},
+          array = this.serializeArray();
+        $(array).each(function () {
+            if (serializeObj[this.name]) {
+                serializeObj[this.name] += ';' + this.value;
+            } else {
+                serializeObj[this.name] = this.value;
+            }
+        });
+
+        if (otherString != undefined) {
+            var otherArray = otherString.split(';');
+            $(otherArray).each(function () {
+                var otherSplitArray = this.split(':');
+                serializeObj[otherSplitArray[0]] = otherSplitArray[1];
+            });
+        }
+        return serializeObj;
+    };
+</script>

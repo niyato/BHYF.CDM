@@ -1,0 +1,193 @@
+﻿@{
+    Layout = "~/Areas/Activity/Views/Shared/_LayoutXueba.cshtml";
+}
+
+<div class="editBox">
+    <h3>编辑收货地址</h3>
+    <form name="form1" id="form1">
+        <div class="editregion">
+            <div>
+                <span class="tit">收件人</span>
+                <p><span class="text"><input type="text" id="rname" placeholder="您的姓名"  maxlength="10" class="editinput"></span></p>
+            </div>
+            <div>
+                <span class="tit">联系电话</span>
+                <p><span class="text"><input type="tel" id="rphone" placeholder="配送员联系您的电话"  maxlength="20" class="editinput"></span></p>
+            </div>
+            <div>
+                <span class="tit">收货地址</span>
+                <p class="content-block fr">
+                    <span class="text"><input type="text" required readonly id="rarea" class="editinput" placeholder="请选择省、市、区" /><img src="@Url.Content("~/Content/xueba/images/arrow.png")" class="arrow"></span>
+                </p>
+            </div>
+            <div>
+                <span class="tit">具体地址</span>
+                <p><span class="text"><input type="text"  id="raddress" placeholder="请输入门牌号等详细信息" maxlength="50" class="editinput"></span></p>
+            </div>
+        </div>
+        @*<div class="dialog_link"><a href="#" id="btnsubmit"><img src="@Url.Content("~/Content/xueba/images/sub-info.png")" class="w60"></a></div>*@
+        <div class="dialog_link"><input type="submit" id="btnsubmit" src="@Url.Content("~/Content/xueba/images/sub-info.png")" class="detailsubmit" /></div>
+    </form>
+</div>
+
+<div class="backHome"><a href="@Url.Action("index", new { uid = @ViewBag.uid, source = @ViewBag.source })" class="roseo">返回首页</a></div>
+
+<!--弹窗内容-->
+<div id="somedialog" class="dialog">
+
+    <div class="dialog__overlay"></div>
+
+    <div class="dialog__content">
+        <a class="fr actionclose" data-dialog-close href="#"><img src="@Url.Content("~/Content/xueba/images/close.gif")" width="16"></a>
+        <h2>是否提交？</h2>
+        <p>提交后，收货地址将不允许修改，请仔细确认。</p>
+        <div class="confirm">
+            <a class="action" data-dialog-close href="#"><img src="@Url.Content("~/Content/xueba/images/confirm.png")"></a>
+        </div>
+
+    </div>
+
+</div>
+
+<!--该样式包含dialog.css-->
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/mobile-select-area.css")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/mobile-select-area.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/dialog.js")"></script>
+<!--弹窗-->
+<script type="text/javascript" src="@Url.Content("~/Scripts/option.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/LAreaData1.js")"></script>
+<script type="text/javascript">
+
+    var selectArea2 = new MobileSelectArea();
+    selectArea2.init({
+        trigger: '#rarea',
+        value: $('#rarea').data('text'),
+        data: LAreaData,
+        eventName: 'click'
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $(".dialog__overlay").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog',
+                'dialogFx': '0',
+            });
+        });
+
+        $(".action").click(function () {
+            //表单验证通过  提交表单
+            PostApplyInfo();
+        });
+
+        //关闭窗口
+        $(".actionclose").click(function () {
+            $(this).DialogShow({
+                'id': 'somedialog',
+                'dialogFx': '0',
+            });
+        })
+
+    })
+
+    $("#form1").submit(function (e) {
+        e.preventDefault();
+        if ($("#rname").val() == "" || $("#rphone").val() == "" || $("#rarea").val() == "" || $("#raddress").val() == "") {
+            CheckInfo();
+        }
+        else {
+            $(this).DialogShow({
+                'id': 'somedialog',  //传入id，可以控制样式
+                'dialogFx': '1',     //传入显示和隐藏的参数
+            });
+        }
+
+    })
+
+
+    function CheckInfo(){
+
+        var textrname = $("#rname").val();
+        var textrphone = $("#rphone").val();
+        var textrarea = $("#rarea").val();
+        var textraddress = $("#raddress").val();
+
+        if (textrname.trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '收件人不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if (textrphone.trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '联系电话不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if (textrarea.trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '收货地址不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+        if (textraddress.trim() == "") {
+            easyDialog.open({
+                container: {
+                    content: '具体地址不能为空！',
+                },
+                autoClose: 2000
+            });
+            return false;
+        }
+
+    }
+
+    function PostApplyInfo() {
+        var data = {
+            "Id": '@ViewBag.id',
+            "ReceiveName": $("#rname").val(),
+            "Phone": $("#rphone").val(),
+            "Area": $("#rarea").val(),
+            "Address": $("#raddress").val()
+        }
+        $.ajax({
+            type: 'PUT',
+            url: '/v1/superscholar/',
+            dataType: 'json',
+            processData: false,
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                window.location.href = '@Url.Action("Detail")' + "?id=" + result.data.id + "&uid=" + result.data.uid;
+                $(this).DialogShow({
+                    'id': 'somedialog',
+                    'dialogFx': '0',
+                });
+                return false;
+            },
+            error: function (einfo) {
+                $(this).DialogShow({
+                    'id': 'somedialog',
+                    'dialogFx': '0',
+                });
+                console.log(einfo);
+            }
+        });
+    }
+
+</script>

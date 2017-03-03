@@ -1,0 +1,67 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type">
+    <meta content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <title>免费环创设计-申请结果</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/style.css")">
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<body>
+    <div class="w85">
+        <h3 class="titc">恭喜您，申请成功！</h3>
+        <div class="seetext" id="divcontent"></div>
+        <!--未审批状态-->
+        <div class="seetext">
+        </div>
+        <div class="seebtn">
+            <a href="@Url.Action("MyDemand", new { applyid = @ViewBag.applyid })" class="see">查看我的申请</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            var applyid = '@ViewBag.applyid';
+            $.ajax({
+                type: 'GET',
+                url: '/v1/design/' + applyid,
+                dataType: 'json',
+                success: function (result) {
+                    if (result.data.apply_status) {
+                        switch (result.data.apply_status) {
+                            case "WaitAuditing":
+                                $("#divcontent").append("<p class='tc mb12'>您的申请当前状态：<span class='green'>未审批</span></p>");
+                                $("#divcontent").append("<p>我们的客服会在1-2个工作日与您联系，请保持电话畅通，谢谢！</p>");
+                                break;
+                            case "Auditing":
+                                $("#divcontent").append("<p class='tc mb12'>您的申请当前状态：<span class='green'>审批通过</span></p>");
+                                $("#divcontent").append(" <p>我们的设计师们正在努力为您设计效果图，请耐心等待！</p>");
+                                break;
+                            case "Refuse":
+                                $("#divcontent").append("<p class='tc mb12'>您的申请当前状态：<span class='green'>审批失败</span></p>");
+                                $("#divcontent").append(" <p>原因：</p>");
+                                break;
+                            case "Designing":
+                                $("#divcontent").append("<p class='tc mb12'>您的申请当前状态：<span class='green'>方案已出</span></p>");
+                                $("#divcontent").append(" <p>我们的客服人员会与您线下沟通，请保持电话畅通，谢谢！</p>");
+                                break;
+                        }
+                    } else {
+                        //未审核
+                        $("#divcontent").append("<p class='tc mb12'>您的申请当前状态：<span class='green'>未审批</span></p>");
+                        $("#divcontent").append("<p>我们的客服会在1-2个工作日与您联系，请保持电话畅通，谢谢！</p>");
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>

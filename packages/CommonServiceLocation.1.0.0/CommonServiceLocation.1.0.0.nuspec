@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>CommonServiceLocation</id>
+    <version>1.0.0</version>
+    <title>Microsoft.Practices.ServiceLocation for Enterprise Library 6.0</title>
+    <authors>Thang.Duong</authors>
+    <owners>Thang.Duong</owners>
+    <projectUrl>https://servicelocation.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The service location assembly is required for the dependency injection mechanism. This assembly integrates any suitable dependency injection container with Enterprise Library by providing an abstraction layer for dependency injection. It is contained in the assembly Microsoft.Practices.ServiceLocation.dll</description>
+    <summary>This package contains the assembly Microsoft.Practices.ServiceLocation.dll</summary>
+  </metadata>
+</package>
